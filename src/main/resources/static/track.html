@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Track Complaint — SamadhanAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--blue:#1e40af;--blue2:#2563eb;--orange:#f97316;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--bg:#f8fafc;--white:#fff;--gray:#64748b;--border:#e2e8f0;--text:#1e293b;}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);}
+        a{text-decoration:none;color:inherit;}
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;}.logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1rem;}.nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;}.nav-links a:hover{color:#fff;}
+        .page-hdr{background:var(--blue);color:#fff;padding:2.5rem 2rem;text-align:center;}
+        .page-hdr h1{font-size:1.8rem;font-weight:900;margin-bottom:.3rem;}
+        .page-hdr p{color:#bfdbfe;font-size:.95rem;}
+        .main{max-width:680px;margin:0 auto;padding:2rem;}
+        .card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem;}
+        .card-hdr{display:flex;align-items:center;gap:.75rem;margin-bottom:1.3rem;}
+        .card-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .card-hdr h3{font-size:1.05rem;font-weight:800;color:var(--text);}
+        .card-hdr p{font-size:.78rem;color:var(--gray);}
+        .search-card{background:#fff;border:2.5px solid var(--blue2);border-radius:16px;padding:2rem;}
+        .search-row{display:flex;gap:.7rem;margin-top:1rem;}
+        .search-row input{flex:1;padding:.85rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.04em;color:var(--text);outline:none;transition:.18s;}
+        .search-row input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+        .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.8rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;border:none;transition:.18s;text-decoration:none;}
+        .btn-blue{background:var(--blue2);color:#fff;}.btn-blue:hover{background:var(--blue);}
+        .btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:#ea6c00;}
+        .btn-gray{background:#f1f5f9;color:var(--text);border:2px solid var(--border);}.btn-gray:hover{background:#e2e8f0;}
+        .btn-green{background:var(--green);color:#fff;}.btn-green:hover{background:#15803d;}
+        .btn-wa{background:#16a34a;color:#fff;}.btn-wa:hover{background:#15803d;}
+        .btn-soft-blue{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}.btn-soft-blue:hover{background:#dbeafe;}
+        .btn-sm{padding:.5rem 1rem;font-size:.82rem;}
+        .btn-full{width:100%;justify-content:center;}
+        .btn:disabled{opacity:.5;cursor:not-allowed;}
+        .status-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem 1rem;border-radius:20px;font-size:.82rem;font-weight:800;letter-spacing:.02em;}
+        .s-PENDING{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a;}
+        .s-IN_PROGRESS{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}
+        .s-RESOLVED{background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;}
+        .s-REJECTED{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca;}
+        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem 2rem;margin:1rem 0;}
+        .info-lbl{font-size:.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+        .info-val{font-size:.9rem;font-weight:700;color:var(--text);}
+        .comp-img{width:100%;max-height:230px;object-fit:cover;border-radius:12px;border:2px solid var(--border);margin-bottom:1rem;display:none;}
+        .timeline{border-top:2px solid var(--border);padding-top:1.2rem;margin-top:1.2rem;}
+        .tl-head{font-size:.78rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;}
+        .tl-item{display:flex;gap:.9rem;padding:.5rem 0;position:relative;}
+        .tl-item:not(:last-child)::before{content:'';position:absolute;left:14px;top:36px;bottom:-4px;width:2px;background:var(--border);}
+        .tl-dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0;margin-top:2px;}
+        .tl-dot.done{background:var(--green);border-color:var(--green);color:#fff;}
+        .tl-dot.active{background:#eff6ff;border-color:var(--blue2);color:var(--blue2);}
+        .tl-dot.wait{background:#fffbeb;border-color:#fde68a;}
+        .tl-title{font-size:.9rem;font-weight:700;color:var(--text);}
+        .tl-date{font-size:.76rem;color:var(--gray);margin-top:1px;}
+        .form-group{margin-bottom:1.1rem;}
+        .form-group label{display:block;font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+        input[type=text],textarea,select{width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;color:var(--text);background:#fff;outline:none;transition:.18s;}
+        input:focus,textarea:focus,select:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+        textarea{resize:vertical;min-height:80px;}
+        .notice{border-radius:10px;padding:.9rem 1rem;font-size:.86rem;display:flex;align-items:flex-start;gap:.6rem;margin-bottom:1rem;line-height:1.55;}
+        .notice .ico{font-size:1rem;flex-shrink:0;margin-top:1px;}
+        .n-blue{background:#eff6ff;border:1.5px solid #bfdbfe;color:#1e40af;}
+        .n-green{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#14532d;}
+        .n-yellow{background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;}
+        .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.8rem 1.4rem;border-radius:10px;font-size:.88rem;font-weight:600;display:none;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+        @media(max-width:520px){.info-grid{grid-template-columns:1fr;}.search-row{flex-direction:column;}.nav-links a:not(:last-child){display:none;}}
+
+        /* ✅ resolvedBy card styles */
+        .resolved-by-card{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem;}
+        .resolved-by-card .rb-icon{font-size:1.5rem;flex-shrink:0;}
+        .resolved-by-card .rb-title{font-size:.88rem;font-weight:800;color:#15803d;}
+        .resolved-by-card .rb-sub{font-size:.76rem;color:#166534;margin-top:2px;}
+
+        /* ✅ Resolve modal styles */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:1rem;}
+        .modal-overlay.open{display:flex;}
+        .modal{background:#fff;border-radius:20px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:popIn .2s ease;}
+        @keyframes popIn{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
+        .modal h3{font-size:1.15rem;font-weight:900;margin-bottom:.25rem;}
+        .modal .sub{font-size:.82rem;color:var(--gray);margin-bottom:1.2rem;}
+        .modal-actions{display:flex;gap:.75rem;margin-top:1.3rem;}
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- ✅ FIX 1: nav-login-btn + nav-profile-btn added -->
+<div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="submit.html" class="nav-cta">📸 File Complaint</a>
+    <a href="login.html" id="nav-login-btn">Login</a>
+    <a href="profile.html" id="nav-profile-btn" style="display:none;"></a>
+</div>
+
+<div class="page-hdr">
+    <h1>🔍 Track Your Complaint</h1>
+    <p>Enter your Reference ID to see full details and live status</p>
+</div>
+
+<div class="main">
+
+    <!-- SEARCH BOX -->
+    <div class="search-card">
+        <div style="font-size:.9rem;font-weight:800;color:var(--text);margin-bottom:.2rem;">Enter Your Reference ID</div>
+        <div style="font-size:.82rem;color:var(--gray);">You received this ID after submitting — also check your email inbox</div>
+        <div class="search-row">
+            <input type="text" id="ref-inp" placeholder="e.g. SAI-20241201-00123" onkeydown="if(event.key==='Enter')doTrack()"/>
+            <button class="btn btn-blue" onclick="doTrack()" id="search-btn">🔍 Search</button>
+        </div>
+        <div style="font-size:.76rem;color:var(--gray);margin-top:.5rem;">💡 This ID was sent to your email when you filed the complaint</div>
+    </div>
+
+    <!-- NOT FOUND -->
+    <div id="not-found" style="display:none;">
+        <div class="card" style="text-align:center;padding:3rem;">
+            <div style="font-size:3.5rem;margin-bottom:.8rem;">😔</div>
+            <h3 style="font-size:1.1rem;font-weight:900;margin-bottom:.4rem;">No complaint found</h3>
+            <p style="font-size:.88rem;color:var(--gray);">No complaint matched this Reference ID. Please double check and try again.</p>
+            <a href="submit.html" class="btn btn-orange" style="display:inline-flex;margin-top:1.5rem;">📸 File a New Complaint</a>
+        </div>
+    </div>
+
+    <!-- COMPLAINT DETAILS -->
+    <div id="comp-section" style="display:none;">
+
+        <!-- STATUS CARD -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <div>
+                    <div style="font-size:.78rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem;">Complaint Status</div>
+                    <span id="status-badge" class="status-badge s-PENDING">⏳ Pending</span>
+                </div>
+                <div id="action-btns" style="display:flex;gap:.6rem;flex-wrap:wrap;"></div>
+            </div>
+            <div id="status-explain" style="font-size:.85rem;color:var(--gray);margin-bottom:1rem;"></div>
+
+            <!-- resolvedBy info card — shown only when RESOLVED -->
+            <div id="resolved-by-card" style="display:none;" class="resolved-by-card">
+                <div class="rb-icon" id="rb-icon">✅</div>
+                <div>
+                    <div class="rb-title" id="rb-title">Complaint Resolved</div>
+                    <div class="rb-sub"  id="rb-sub"></div>
+                </div>
+            </div>
+
+            <img id="comp-img" class="comp-img" src="" alt="Complaint Photo"/>
+
+            <div class="info-grid">
+                <div><div class="info-lbl">Reference ID</div><div class="info-val" id="i-ref">—</div></div>
+                <div><div class="info-lbl">Problem Type</div><div class="info-val" id="i-type">—</div></div>
+                <div><div class="info-lbl">Department</div><div class="info-val" id="i-dept">—</div></div>
+                <div><div class="info-lbl">Ward / Area</div><div class="info-val" id="i-ward">—</div></div>
+                <div><div class="info-lbl">Address</div><div class="info-val" id="i-loc">—</div></div>
+                <div><div class="info-lbl">Filed On</div><div class="info-val" id="i-date">—</div></div>
+            </div>
+
+            <div id="res-note" style="display:none;" class="notice n-green"><span class="ico">📋</span><span id="res-note-txt"></span></div>
+            <div id="email-notice" class="notice n-blue" style="margin-top:.5rem;"><span class="ico">📧</span><span id="email-notice-txt"></span></div>
+
+            <!-- TIMELINE -->
+            <div class="timeline">
+                <div class="tl-head">📅 Complaint Journey</div>
+                <div class="tl-item">
+                    <div class="tl-dot done">✓</div>
+                    <div><div class="tl-title">Complaint Filed & Verified</div><div class="tl-date" id="tl-d1">—</div></div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot" id="tl-dot2">📧</div>
+                    <div><div class="tl-title" id="tl-t2">Email Sent to Department</div><div class="tl-date" id="tl-d2">—</div></div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot" id="tl-dot3">🏛️</div>
+                    <div><div class="tl-title" id="tl-t3">Department Action</div><div class="tl-date" id="tl-d3">Waiting...</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDIT COMPLAINT -->
+        <div class="card" id="edit-card" style="display:none;">
+            <div class="card-hdr">
+                <div class="card-ico" style="background:#fff7ed;">✏️</div>
+                <div><h3>Edit Complaint</h3><p>You can update while complaint is Pending or In Progress</p></div>
+            </div>
+            <div class="notice n-yellow"><span class="ico">⚠️</span><span>Changes can only be made before the complaint is resolved or rejected.</span></div>
+            <div class="form-group">
+                <label>Problem Type</label>
+                <small style="color:#64748b;font-size:12px;">Click to select from list ⬇️</small>
+                <select id="edit-type">
+                    <option value="POTHOLE">🕳️ Pothole</option>
+                    <option value="BROKEN_ROAD">🛣️ Broken Road</option>
+                    <option value="WATERLOGGING">💦 Waterlogging</option>
+                    <option value="WATER_LEAK">🚿 Water Leak</option>
+                    <option value="NO_WATER_SUPPLY">❌ No Water Supply</option>
+                    <option value="DIRTY_WATER_SUPPLY">🟤 Dirty Water Supply</option>
+                    <option value="OPEN_MANHOLE">🕳️ Open Manhole</option>
+                    <option value="SEWAGE_OVERFLOW">💩 Sewage Overflow</option>
+                    <option value="BLOCKED_DRAIN">🚫 Blocked Drain</option>
+                    <option value="GARBAGE">🗑️ Garbage</option>
+                    <option value="GARBAGE_DUMP">🗑️ Garbage Dump</option>
+                    <option value="DEAD_ANIMAL">🐾 Dead Animal</option>
+                    <option value="BROKEN_STREETLIGHT">💡 Broken Street Light</option>
+                    <option value="POWER_OUTAGE">⚡ Power Outage</option>
+                    <option value="FALLEN_ELECTRIC_WIRE">🔌 Fallen Electric Wire</option>
+                    <option value="BROKEN_FOOTPATH">🚶 Broken Footpath</option>
+                    <option value="ENCROACHMENT">🚧 Encroachment</option>
+                    <option value="STRAY_ANIMALS">🐕 Stray Animals</option>
+                    <option value="FALLEN_TREE">🌳 Fallen Tree</option>
+                    <option value="PARK_MAINTENANCE">🌿 Park Maintenance</option>
+                    <option value="OTHER">📌 Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="edit-desc" placeholder="Update complaint details..."></textarea>
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="saveEdit()">💾 Save Changes</button>
+        </div>
+
+    </div><!-- /comp-section -->
+
+</div><!-- /main -->
+
+<!-- Resolve Confirmation Modal -->
+<div class="modal-overlay" id="resolve-modal">
+    <div class="modal">
+        <h3>✅ Mark as Resolved</h3>
+        <p class="sub">Confirm that the problem has been fixed at your location.</p>
+        <div class="form-group">
+            <label>Your Note <span style="color:var(--gray);font-weight:400;font-size:.76rem;">(optional)</span></label>
+            <textarea id="resolve-note" placeholder="e.g. Pothole was filled yesterday, road looks good now..."></textarea>
+        </div>
+        <div class="notice n-yellow" style="margin-bottom:0;">
+            <span class="ico">⚠️</span>
+            <span>Once marked resolved, this action cannot be undone. Only confirm if the problem is actually fixed.</span>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-gray btn-full" onclick="closeResolveModal()">Cancel</button>
+            <button class="btn btn-green btn-full" id="confirm-resolve-btn" onclick="confirmResolve()">✅ Yes, It's Fixed!</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/track.js"></script>
+<script>
+    function toggleNav() {
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const h = document.getElementById('hamburger');
+        const n = document.getElementById('mobile-nav');
+        if (!h.contains(e.target) && !n.contains(e.target)) {
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+</body>
+</html>

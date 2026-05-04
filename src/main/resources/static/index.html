@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>SamadhanAI — Civic Complaint Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{
+            --blue:#1e40af; --blue2:#2563eb; --orange:#f97316; --orange2:#ea6c00;
+            --green:#16a34a; --red:#dc2626; --yellow:#d97706;
+            --bg:#f8fafc; --white:#fff; --gray:#64748b; --border:#e2e8f0;
+            --text:#1e293b; --text2:#475569;
+        }
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;}
+        a{text-decoration:none;color:inherit;}
+        img{max-width:100%;display:block;}
+
+        /* NAV */
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;letter-spacing:-.3px;}
+        .logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1.2rem;}
+        .nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;transition:.15s;}
+        .nav-links a:hover{color:#fff;}
+        .nav-cta{background:var(--orange)!important;color:#fff!important;padding:.45rem 1.2rem;border-radius:8px;font-weight:700!important;}
+        .nav-cta:hover{background:var(--orange2)!important;}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,#1e3a8a 0%,#1e40af 50%,#1d4ed8 100%);padding:5rem 2rem 6rem;text-align:center;position:relative;overflow:hidden;}
+        .hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:60px;background:var(--bg);clip-path:ellipse(60% 100% at 50% 100%);}
+        .hero-emoji{
+            font-size:3.5rem; margin-bottom:1rem; display:block; animation:float 3s ease-in-out infinite;
+        }
+        @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+        .hero h1{font-size:2.8rem;font-weight:900;color:#fff;line-height:1.15;margin-bottom:1rem;}
+        .hero h1 span{color:#fbbf24;}
+        .hero p{color:#bfdbfe;font-size:1.1rem;max-width:560px;margin:0 auto 2.5rem;}
+        .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+        .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.8rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;border:none;transition:.18s;text-decoration:none;}
+        .btn-orange{background:var(--orange);color:#fff;}
+        .btn-orange:hover{background:var(--orange2);transform:translateY(-1px);}
+        .btn-white{background:#fff;color:var(--blue);}
+        .btn-white:hover{background:#eff6ff;transform:translateY(-1px);}
+        .btn-blue{background:var(--blue2);color:#fff;}
+        .btn-blue:hover{background:var(--blue);transform:translateY(-1px);}
+        .btn-ghost{background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);}
+        .btn-ghost:hover{background:rgba(255,255,255,.25);}
+        .btn-sm{padding:.55rem 1.2rem;font-size:.88rem;}
+        .btn-lg{padding:1rem 2.5rem;font-size:1.1rem;}
+        .btn-full{width:100%;justify-content:center;}
+        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
+
+        /* STATS STRIP */
+        .stats-strip{background:#fff;border-bottom:2px solid var(--border);padding:1.8rem 2rem;}
+        .stats-inner{display:flex;justify-content:center;gap:4rem;flex-wrap:wrap;max-width:800px;margin:0 auto;}
+        .stat-box{text-align:center;}
+        .stat-num{font-size:2.2rem;font-weight:900;color:var(--blue);line-height:1;}
+        .stat-lbl{font-size:.78rem;color:var(--gray);font-weight:600;margin-top:.2rem;text-transform:uppercase;letter-spacing:.04em;}
+
+        /* SECTIONS */
+        .section{padding:4.5rem 2rem;max-width:1100px;margin:0 auto;}
+        .sec-badge{display:inline-block;background:#eff6ff;color:var(--blue2);padding:.3rem .9rem;border-radius:20px;font-size:.78rem;font-weight:700;margin-bottom:.8rem;border:1.5px solid #bfdbfe;}
+        .sec-title{font-size:2rem;font-weight:900;color:var(--text);margin-bottom:.4rem;}
+        .sec-sub{color:var(--gray);font-size:1rem;}
+
+        /* STEP CARDS */
+        .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:2.5rem;}
+        .step-card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:2rem 1.5rem;text-align:center;position:relative;transition:.2s;}
+        .step-card:hover{border-color:#93c5fd;transform:translateY(-3px);box-shadow:0 8px 24px rgba(30,64,175,.1);}
+        .step-num{width:44px;height:44px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:1.1rem;margin:0 auto 1rem;}
+        .step-icon{font-size:2.2rem;margin-bottom:.8rem;}
+        .step-card h4{font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:.4rem;}
+        .step-card p{font-size:.87rem;color:var(--gray);line-height:1.6;}
+        .step-tip{display:inline-block;margin-top:.7rem;font-size:.75rem;font-weight:700;padding:.2rem .7rem;border-radius:6px;}
+        .tip-blue{background:#eff6ff;color:var(--blue2);}
+        .tip-green{background:#f0fdf4;color:var(--green);}
+        .tip-orange{background:#fff7ed;color:var(--orange);}
+
+        /* FEATURE CARDS */
+        .features-bg{background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+        .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-top:2rem;}
+        .feat-card{background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:1.6rem;transition:.2s;}
+        .feat-card:hover{border-color:#93c5fd;box-shadow:0 4px 16px rgba(0,0,0,.06);}
+        .feat-icon-box{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+        .feat-card h4{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:.4rem;}
+        .feat-card p{font-size:.86rem;color:var(--gray);line-height:1.65;}
+
+        /* DEPARTMENTS */
+        .dept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:2rem;}
+        .dept-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:1.4rem 1rem;text-align:center;transition:.2s;}
+        .dept-card:hover{border-color:var(--blue2);transform:translateY(-2px);}
+        .dept-emoji{font-size:2.2rem;margin-bottom:.6rem;}
+        .dept-name{font-size:.92rem;font-weight:800;color:var(--text);}
+        .dept-types{font-size:.75rem;color:var(--gray);margin-top:.3rem;line-height:1.5;}
+
+        /* CTA */
+        .cta-section{background:linear-gradient(135deg,var(--orange) 0%,#dc6b00 100%);padding:5rem 2rem;text-align:center;}
+        .cta-section h2{font-size:2.2rem;font-weight:900;color:#fff;margin-bottom:.7rem;}
+        .cta-section p{color:rgba(255,255,255,.85);font-size:1rem;margin-bottom:2rem;}
+
+        /* FOOTER */
+        footer{background:var(--text);padding:2rem;text-align:center;color:#94a3b8;font-size:.85rem;}
+        footer a{color:#fbbf24;font-weight:600;}
+        footer a:hover{color:#fff;}
+
+        /* RESPONSIVE */
+        @media(max-width:600px){
+            .hero h1{font-size:2rem;}
+            .stats-inner{gap:2rem;}
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="mobile-nav" id="mobile-nav">
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="track.html">🔍 Track</a>
+    <a href="submit.html" class="nav-cta">📸 File Complaint</a>
+    <a href="login.html" id="nav-login-btn">Login</a>
+    <a href="profile.html" id="nav-profile-btn" style="display:none;"></a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <span class="hero-emoji">🏛️</span>
+    <h1>Spot a Civic Problem?<br/><span>Report it in 2 Minutes!</span></h1>
+    <p>Take a photo — AI automatically detects the problem, verifies it's real, and sends a formal complaint to the right government department. <strong style="color:#fff;">Completely FREE.</strong></p>
+    <div class="hero-btns">
+        <a href="submit.html" class="btn btn-orange btn-lg">📸 File a Complaint Now</a>
+        <a href="dashboard.html" class="btn btn-ghost btn-lg">📊 View Public Dashboard</a>
+    </div>
+</section>
+
+<!-- LIVE STATS -->
+<div class="stats-strip">
+    <div class="stats-inner">
+        <div class="stat-box">
+            <div class="stat-num" id="st-total" style="color:var(--blue)">—</div>
+            <div class="stat-lbl">Total Complaints</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="st-res" style="color:var(--green)">—</div>
+            <div class="stat-lbl">✅ Resolved</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="st-pend" style="color:var(--orange)">—</div>
+            <div class="stat-lbl">⏳ Pending</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" style="color:var(--text)">5</div>
+            <div class="stat-lbl">🏛️ Departments</div>
+        </div>
+    </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section" style="text-align:center;">
+    <span class="sec-badge">✨ How It Works</span>
+    <h2 class="sec-title">Just 4 Simple Steps</h2>
+    <p class="sec-sub">No office visits, no long queues — report the problem in under 2 minutes from your phone.</p>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-icon">📷</div>
+            <h4>Take a Photo</h4>
+            <p>Take a photo of any civic problem near you — pothole, garbage, broken streetlight, or sewage overflow.</p>
+            <span class="step-tip tip-blue">Use phone camera directly</span>
+        </div>
+        <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-icon">🤖</div>
+            <h4>AI Analyzes</h4>
+            <p>AI analyzes the photo, verifies it, and automatically selects the correct government department.</p>
+            <span class="step-tip tip-orange">Fake photos are rejected</span>
+        </div>
+        <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-icon">📧</div>
+            <h4>Email to Govt</h4>
+            <p>AI writes a formal complaint letter and emails it with your photo to the department. You get a copy too.</p>
+            <span class="step-tip tip-green">You get CC copy too</span>
+        </div>
+        <div class="step-card">
+            <div class="step-num">4</div>
+            <div class="step-icon">📋</div>
+            <h4>Track Progress</h4>
+            <p>Use your Reference ID to track status anytime. Auto-reminder sent after 15 days of no action.</p>
+            <span class="step-tip tip-blue">Share on WhatsApp too</span>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-bg">
+    <div class="section" style="text-align:center;">
+        <span class="sec-badge">🛡️ Why SamadhanAI</span>
+        <h2 class="sec-title">Technology that holds government accountable</h2>
+        <p class="sec-sub">Built with AI to make sure every complaint reaches the right people</p>
+        <div class="feat-grid" style="text-align:left;">
+            <div class="feat-card">
+                <div class="feat-icon-box" style="background:#eff6ff;">🤖</div>
+                <h4>AI Problem Detection</h4>
+                <p>Upload a photo and AI automatically identifies the problem and routes it to the correct department — no manual selection needed.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-box" style="background:#fef2f2;">🔍</div>
+                <h4>4-Layer Fake Photo Check</h4>
+                <p>File type check, EXIF data, GPS verification, and AI image analysis — all used to prevent fake complaints.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-box" style="background:#fff7ed;">📧</div>
+                <h4>Direct Government Email</h4>
+                <p>AI writes a professional complaint letter and emails it with your photo directly to the department's official email address.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-box" style="background:#f0fdf4;">📊</div>
+                <h4>Public Transparency</h4>
+                <p>Public dashboard showing ward-wise complaints, department performance, and issues ignored for 30+ days.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-box" style="background:#fefce8;">⏰</div>
+                <h4>Auto Reminder at 15 Days</h4>
+                <p>If the department takes no action within 15 days, an automatic reminder email is sent — no manual follow-up needed from you.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-box" style="background:#f0fdf4;">📱</div>
+                <h4>WhatsApp Sharing</h4>
+                <p>Share your complaint link on WhatsApp to build social pressure for faster resolution and create public awareness.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DEPARTMENTS -->
+<div class="section" style="text-align:center;">
+    <span class="sec-badge">🏛️ Departments</span>
+    <h2 class="sec-title">AI Routes Your Complaint to the Right Department</h2>
+    <p class="sec-sub">You don't need to pick anything — AI detects from your photo automatically</p>
+    <div class="dept-grid">
+        <div class="dept-card">
+            <div class="dept-emoji">🛣️</div>
+            <div class="dept-name">PWD</div>
+            <div class="dept-types">Roads · Potholes · Bridges · Footpaths</div>
+        </div>
+        <div class="dept-card">
+            <div class="dept-emoji">🏙️</div>
+            <div class="dept-name">Municipal Corp</div>
+            <div class="dept-types">Garbage · Encroachment · Stray Animals</div>
+        </div>
+        <div class="dept-card">
+            <div class="dept-emoji">⚡</div>
+            <div class="dept-name">Electricity Board</div>
+            <div class="dept-types">Street Lights · Fallen Wires · Outage</div>
+        </div>
+        <div class="dept-card">
+            <div class="dept-emoji">💧</div>
+            <div class="dept-name">Water Supply</div>
+            <div class="dept-types">Leaks · No Water · Dirty Water</div>
+        </div>
+        <div class="dept-card">
+            <div class="dept-emoji">🚰</div>
+            <div class="dept-name">Sanitation</div>
+            <div class="dept-types">Sewage · Open Manholes · Drains</div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+    <h2>See a Problem? Report it Now! 👇</h2>
+    <p>Takes 2 minutes. No account needed. Completely free.</p>
+    <a href="submit.html" class="btn btn-white btn-lg">📸 File a Complaint</a>
+</section>
+
+<footer>
+    <p>SamadhanAI &copy; 2025 — Making civic governance transparent &nbsp;|&nbsp;
+        <a href="dashboard.html">Dashboard</a> &nbsp;·&nbsp;
+        <a href="track.html">Track</a> &nbsp;·&nbsp;
+        <a href="submit.html">Submit</a> &nbsp;·&nbsp;
+        <a href="login.html">Login</a></p>
+</footer>
+
+<script src="js/auth.js"></script>
+<script>
+
+    // Live stats — with fallback
+    fetch('/api/dashboard/stats')
+        .then(r=>r.json())
+        .then(d=>{
+            if(d.success){
+                document.getElementById('st-total').textContent = d.data.totalComplaints    ?? '0';
+                document.getElementById('st-res').textContent   = d.data.resolvedComplaints ?? '0';
+                document.getElementById('st-pend').textContent  = d.data.pendingComplaints  ?? '0';
+            }
+        })
+        .catch(()=>{});
+
+    // ✅ CHANGE 3: Hamburger toggle
+    function toggleNav() {
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const h = document.getElementById('hamburger');
+        const n = document.getElementById('mobile-nav');
+        if (!h.contains(e.target) && !n.contains(e.target)) {
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Admin Panel — SamadhanAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--blue:#1e40af;--blue2:#2563eb;--orange:#f97316;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--bg:#f8fafc;--white:#fff;--gray:#64748b;--border:#e2e8f0;--text:#1e293b;}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);}
+        a{text-decoration:none;color:inherit;}
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;}.logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1rem;}.nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;}.nav-links a:hover{color:#fff;}
+        .admin-chip{background:rgba(249,115,22,.2);color:#fed7aa;padding:.25rem .8rem;border-radius:20px;font-size:.75rem;font-weight:800;border:1px solid rgba(249,115,22,.3);}
+        .logout-btn{background:rgba(239,68,68,.2);color:#fca5a5;padding:.35rem .9rem;border-radius:8px;font-size:.85rem;font-weight:700;border:1px solid rgba(239,68,68,.3);cursor:pointer;font-family:'Nunito',sans-serif;}
+        .page-hdr{background:linear-gradient(135deg,var(--orange),#dc6b00);color:#fff;padding:2.5rem 2rem;text-align:center;}
+        .page-hdr h1{font-size:1.8rem;font-weight:900;margin-bottom:.3rem;}
+        .page-hdr p{color:rgba(255,255,255,.85);font-size:.95rem;}
+        .main{max-width:1100px;margin:0 auto;padding:2rem;}
+        .card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem;}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
+        .stat-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:1.4rem;text-align:center;transition:.2s;}
+        .stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08);}
+        .stat-n{font-size:2rem;font-weight:900;line-height:1;margin-bottom:.25rem;}
+        .stat-l{font-size:.7rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;}
+        .tabs{display:flex;gap:.4rem;background:#f1f5f9;padding:.35rem;border-radius:12px;border:2px solid var(--border);width:fit-content;margin-bottom:1.5rem;}
+        .tab-btn{padding:.55rem 1.5rem;border-radius:9px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;color:var(--gray);border:none;background:none;transition:.18s;}
+        .tab-btn.active{background:#fff;color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,.1);}
+        .tab-pane{display:none;}.tab-pane.active{display:block;}
+        .filter-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+        .filter-row input,.filter-row select{padding:.65rem .95rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;color:var(--text);background:#fff;outline:none;transition:.18s;}
+        .filter-row input{flex:1;min-width:200px;}
+        .filter-row input:focus,.filter-row select:focus{border-color:var(--blue2);}
+        .table-wrap{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;font-size:.86rem;}
+        thead th{font-size:.7rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;padding:.75rem .9rem;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;background:#f8fafc;}
+        tbody td{padding:.85rem .9rem;border-bottom:1.5px solid var(--border);color:var(--text);vertical-align:middle;}
+        tbody tr:last-child td{border:none;}
+        tbody tr:hover td{background:#f8fafc;}
+        .s-badge{display:inline-flex;align-items:center;padding:.22rem .75rem;border-radius:20px;font-size:.76rem;font-weight:700;}
+        .s-PENDING{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a;}
+        .s-IN_PROGRESS{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}
+        .s-RESOLVED{background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;}
+        .s-REJECTED{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca;}
+        .s-ACTIVE{background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;}
+        .s-DISABLED{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca;}
+        .s-USER{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}
+        .s-ADMIN{background:#fff7ed;color:var(--orange);border:1.5px solid #fed7aa;}
+        .mini-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#f59e0b);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:900;color:#fff;flex-shrink:0;}
+        .btn{display:inline-flex;align-items:center;gap:.3rem;padding:.5rem 1rem;border-radius:8px;font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;border:none;transition:.18s;text-decoration:none;}
+        .btn-blue-soft{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}.btn-blue-soft:hover{background:#dbeafe;}
+        .btn-orange-soft{background:#fff7ed;color:var(--orange);border:1.5px solid #fed7aa;}.btn-orange-soft:hover{background:#ffedd5;}
+        .btn-red-soft{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca;}.btn-red-soft:hover{background:#fee2e2;}
+        .btn-green-soft{background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;}.btn-green-soft:hover{background:#dcfce7;}
+        .btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:#ea6c00;}
+        .btn-gray{background:#f1f5f9;color:var(--text);border:2px solid var(--border);}.btn-gray:hover{background:#e2e8f0;}
+        .btn-sm{padding:.4rem .85rem;font-size:.78rem;}
+        .btn-full{width:100%;justify-content:center;}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:1rem;}
+        .modal-overlay.open{display:flex;}
+        .modal{background:#fff;border-radius:20px;padding:2rem;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:popIn .2s ease;}
+        @keyframes popIn{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
+        .modal h3{font-size:1.15rem;font-weight:900;margin-bottom:.25rem;}
+        .modal .sub{font-size:.82rem;color:var(--gray);margin-bottom:1.2rem;}
+        .form-group{margin-bottom:1rem;}
+        .form-group label{display:block;font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.35rem;}
+        select,textarea{width:100%;padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.9rem;color:var(--text);background:#fff;outline:none;transition:.18s;}
+        textarea{resize:vertical;min-height:80px;}
+        select:focus,textarea:focus{border-color:var(--blue2);}
+        .modal-actions{display:flex;gap:.75rem;margin-top:1.3rem;}
+        .loading{text-align:center;padding:2rem;color:var(--gray);font-size:.9rem;}
+        .spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--blue2);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .6rem;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.8rem 1.4rem;border-radius:10px;font-size:.88rem;font-weight:600;display:none;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+        @media(max-width:600px){.tabs{width:100%;}.tab-btn{flex:1;text-align:center;}}
+    </style>
+</head>
+<body>
+
+<!-- ✅ CHANGE 1 -->
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- ✅ CHANGE 2 — nav-login-btn + nav-profile-btn added for auth.js initNav() -->
+<div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="track.html">🔍 Track</a>
+    <a href="submit.html" class="nav-cta">📸 File Complaint</a>
+    <a href="login.html" id="nav-login-btn" style="display:none;">Login</a>
+    <a href="profile.html" id="nav-profile-btn" style="display:none;"></a>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+</div>
+
+
+<div class="page-hdr">
+    <h1>🛡️ Admin Panel</h1>
+    <p>Manage users, complaints, and update statuses</p>
+</div>
+
+<div class="main">
+
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-n" id="as-users" style="color:var(--blue)">—</div><div class="stat-l">👥 Total Users</div></div>
+        <div class="stat-card"><div class="stat-n" id="as-total" style="color:var(--orange)">—</div><div class="stat-l">📋 Total Complaints</div></div>
+        <div class="stat-card"><div class="stat-n" id="as-res" style="color:var(--green)">—</div><div class="stat-l">✅ Resolved</div></div>
+        <div class="stat-card"><div class="stat-n" id="as-ign" style="color:var(--red)">—</div><div class="stat-l">🚨 Ignored 30d+</div></div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('users',this)">👥 Users</button>
+        <button class="tab-btn" onclick="switchTab('complaints',this)">📋 Complaints</button>
+    </div>
+
+    <!-- TAB: USERS -->
+    <div class="tab-pane active" id="tab-users">
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+                <div style="font-size:1rem;font-weight:900;">All Users</div>
+                <span style="font-size:.82rem;color:var(--gray);" id="users-count"></span>
+            </div>
+            <div class="filter-row">
+                <input type="text" id="user-search" placeholder="🔍 Search by name or email..." oninput="filterUsers()"/>
+                <select id="user-role-f" onchange="filterUsers()">
+                    <option value="">All Roles</option>
+                    <option value="USER">Users</option>
+                    <option value="ADMIN">Admins</option>
+                </select>
+            </div>
+            <div id="users-loading" class="loading"><div class="spinner"></div>Loading users...</div>
+            <div class="table-wrap" id="users-table-wrap" style="display:none;">
+                <table>
+                    <thead><tr><th>User</th><th>Email</th><th>Complaints</th><th>Joined</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="users-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: COMPLAINTS -->
+    <div class="tab-pane" id="tab-complaints">
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+                <div style="font-size:1rem;font-weight:900;">All Complaints</div>
+                <span style="font-size:.82rem;color:var(--gray);" id="comp-count"></span>
+            </div>
+            <div class="filter-row">
+                <input type="text" id="comp-search" placeholder="🔍 Search by ID, type, ward..." oninput="filterComplaints()"/>
+                <select id="comp-status-f" onchange="filterComplaints()">
+                    <option value="">All Statuses</option>
+                    <option value="PENDING">⏳ Pending</option>
+                    <option value="IN_PROGRESS">🔄 In Progress</option>
+                    <option value="RESOLVED">✅ Resolved</option>
+                    <option value="REJECTED">❌ Rejected</option>
+                </select>
+                <select id="comp-dept-f" onchange="filterComplaints()">
+                    <option value="">All Departments</option>
+                    <option value="PWD">PWD</option>
+                    <option value="MUNICIPAL_CORPORATION">Municipal Corp</option>
+                    <option value="ELECTRICITY_BOARD">Electricity Board</option>
+                    <option value="WATER_SUPPLY">Water Supply</option>
+                    <option value="SANITATION">Sanitation</option>
+                </select>
+            </div>
+            <div id="comp-loading" class="loading"><div class="spinner"></div>Loading complaints...</div>
+            <div class="table-wrap" id="comp-table-wrap" style="display:none;">
+                <table>
+                    <thead><tr><th>Reference ID</th><th>Type</th><th>Department</th><th>Ward</th><th>Filed By</th><th>Date</th><th>Status</th><th>Resolved By</th><th>Actions</th></tr></thead>
+                    <tbody id="comp-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- STATUS MODAL -->
+<div class="modal-overlay" id="status-modal">
+    <div class="modal">
+        <h3>📋 Update Status</h3>
+        <p class="sub" id="modal-ref-txt">Complaint: —</p>
+        <div class="form-group">
+            <label>New Status</label>
+            <select id="new-status">
+                <option value="PENDING">⏳ Pending</option>
+                <option value="IN_PROGRESS">🔄 In Progress</option>
+                <option value="RESOLVED">✅ Resolved</option>
+                <option value="REJECTED">❌ Rejected</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Resolution Note <span style="color:var(--gray);font-weight:400;font-size:.78rem;">(sent to citizen via email)</span></label>
+            <textarea id="res-note" placeholder="e.g. Pothole filled on Jan 15 by PWD team..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-gray btn-full" onclick="closeStatusModal()">Cancel</button>
+            <button class="btn btn-orange btn-full" onclick="confirmStatus()">✅ Update</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    if(!localStorage.getItem('sam_token')){location.href='login.html';}
+    try{const u=JSON.parse(localStorage.getItem('sam_user')||'null');if(u&&u.role!=='ADMIN'){location.href='profile.html';}}catch(e){}
+
+    // ✅ CHANGE 3
+    function toggleNav() {
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const h = document.getElementById('hamburger');
+        const n = document.getElementById('mobile-nav');
+        if (!h.contains(e.target) && !n.contains(e.target)) {
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

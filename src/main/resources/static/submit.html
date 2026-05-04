@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>File a Complaint — SamadhanAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--blue:#1e40af;--blue2:#2563eb;--orange:#f97316;--orange2:#ea6c00;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--bg:#f8fafc;--white:#fff;--gray:#64748b;--border:#e2e8f0;--text:#1e293b;}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;}
+        a{text-decoration:none;color:inherit;}
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;}.logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1rem;}.nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;transition:.15s;}.nav-links a:hover{color:#fff;}
+        .page-hdr{background:var(--blue);color:#fff;padding:2.5rem 2rem;text-align:center;}
+        .page-hdr h1{font-size:1.8rem;font-weight:900;margin-bottom:.3rem;}
+        .page-hdr p{color:#bfdbfe;font-size:.95rem;}
+        .progress-bar{background:#fff;border-bottom:2px solid var(--border);padding:.9rem 2rem;}
+        .prog-inner{display:flex;align-items:center;max-width:600px;margin:0 auto;}
+        .prog-step{display:flex;align-items:center;gap:.4rem;}
+        .prog-circle{width:32px;height:32px;border-radius:50%;border:2.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:var(--gray);flex-shrink:0;transition:.25s;}
+        .prog-circle.active{background:var(--orange);border-color:var(--orange);color:#fff;}
+        .prog-circle.done{background:var(--green);border-color:var(--green);color:#fff;}
+        .prog-label{font-size:.75rem;font-weight:700;color:var(--gray);transition:.25s;}
+        .prog-label.active{color:var(--orange);}
+        .prog-line{flex:1;height:2px;background:var(--border);margin:0 .4rem;transition:.25s;}
+        .prog-line.done{background:var(--green);}
+        .main{max-width:680px;margin:0 auto;padding:2rem;}
+        .card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem;}
+        .card-title{display:flex;align-items:center;gap:.75rem;margin-bottom:1.3rem;}
+        .card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .card-title h3{font-size:1.05rem;font-weight:800;color:var(--text);}
+        .card-title p{font-size:.78rem;color:var(--gray);}
+        .upload-zone{border:2.5px dashed #cbd5e1;border-radius:14px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:.2s;background:#f8fafc;margin-top:.8rem;}
+        .upload-zone:hover,.upload-zone.over{border-color:var(--orange);background:#fff7ed;}
+        .upload-zone .uz-icon{font-size:2.5rem;margin-bottom:.6rem;}
+        .upload-zone h4{font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:.2rem;}
+        .upload-zone p{font-size:.82rem;color:var(--gray);}
+        .photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:.8rem;}
+        .photo-card{border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;transition:.2s;}
+        .photo-card.rejected-card{border-color:var(--red);background:#fff5f5;}
+        .photo-preview-wrap{position:relative;}
+        .photo-thumb{width:100%;height:140px;object-fit:cover;display:block;}
+        .photo-remove-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;}
+        .photo-remove-btn:hover{background:var(--red);}
+        .photo-num{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.55);color:#fff;font-size:.7rem;font-weight:800;padding:2px 7px;border-radius:20px;}
+        .photo-status{padding:8px 10px;font-size:.76rem;font-weight:700;}
+        .photo-status.analyzing{color:#0369a1;display:flex;align-items:center;gap:6px;}
+        .photo-status.ok{color:var(--green);}
+        .photo-status.rejected{color:var(--red);}
+        .photo-type{display:block;font-size:.72rem;font-weight:600;color:var(--gray);margin-top:2px;}
+        .photo-conf{display:block;font-size:.7rem;color:var(--gray);}
+        .photo-reason{display:block;font-size:.72rem;font-weight:600;color:var(--red);margin-top:2px;line-height:1.4;}
+        .photo-count-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;}
+        .photo-count-label{font-size:.82rem;font-weight:700;color:var(--gray);}
+        .spinner,.spinner-sm{border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+        .spinner{width:20px;height:20px;border:2.5px solid #e0f2fe;border-top-color:#0284c7;}
+        .spinner-sm{width:14px;height:14px;border:2px solid #bae6fd;border-top-color:#0284c7;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        .form-group{margin-bottom:1.2rem;}
+        .form-group label{display:block;font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+        .req{color:var(--red);margin-left:2px;}
+        .hint{font-size:.78rem;color:var(--gray);margin-bottom:.4rem;line-height:1.5;}
+        input[type=text],input[type=email],input[type=tel],textarea{width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;color:var(--text);background:#fff;outline:none;transition:.18s;}
+        input:focus,textarea:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+        input[readonly]{background:#f8fafc;color:var(--gray);}
+        textarea{resize:vertical;min-height:85px;}
+        .input-row{display:flex;gap:.6rem;}.input-row input{flex:1;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .gps-btn{background:var(--blue2);color:#fff;border:none;padding:.75rem 1.1rem;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:.18s;}
+        .gps-btn:hover{background:var(--blue);}
+        .check-row{display:flex;align-items:flex-start;gap:.75rem;padding:1rem;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;}
+        .check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--orange);flex-shrink:0;margin-top:3px;cursor:pointer;}
+        .check-row label{font-size:.88rem;color:var(--text);cursor:pointer;line-height:1.5;}
+        .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.8rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;border:none;transition:.18s;text-decoration:none;}
+        .btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:var(--orange2);}
+        .btn-blue{background:var(--blue2);color:#fff;}
+        .btn-gray{background:#f1f5f9;color:var(--text);border:2px solid var(--border);}.btn-gray:hover{background:#e2e8f0;}
+        .btn-sm{padding:.45rem 1rem;font-size:.82rem;}
+        .btn-full{width:100%;justify-content:center;}
+        .btn:disabled{opacity:.5;cursor:not-allowed;}
+        .btn-wa{background:#16a34a;color:#fff;}.btn-wa:hover{background:#15803d;}
+        .notice{border-radius:10px;padding:.9rem 1rem;font-size:.86rem;display:flex;align-items:flex-start;gap:.6rem;margin-bottom:1rem;line-height:1.55;}
+        .notice span.ico{font-size:1rem;flex-shrink:0;margin-top:1px;}
+        .n-yellow{background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;}
+        .n-red{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;}
+        .n-green{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#14532d;}
+        .success-card{display:none;background:#fff;border:2px solid #bbf7d0;border-radius:20px;padding:3rem 2rem;text-align:center;}
+        .success-card h2{font-size:1.6rem;font-weight:900;color:var(--green);margin-bottom:.5rem;}
+        .ref-box{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:12px;padding:1.5rem;margin:1.5rem 0;}
+        .ref-id{font-size:1.6rem;font-weight:900;color:var(--text);letter-spacing:.05em;word-break:break-all;}
+        .success-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:1rem;}
+        .modal-overlay.open{display:flex;}
+        .modal{background:#fff;border-radius:20px;padding:2rem;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:popIn .2s ease;}
+        @keyframes popIn{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
+        .modal h3{font-size:1.2rem;font-weight:900;margin-bottom:.3rem;}
+        .modal .sub{font-size:.82rem;color:var(--gray);margin-bottom:1.2rem;}
+        .modal-row{display:flex;justify-content:space-between;align-items:center;padding:.65rem 0;border-bottom:1.5px solid var(--border);font-size:.88rem;}
+        .modal-row:last-of-type{border:none;}
+        .ml{color:var(--gray);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+        .mv{font-weight:700;color:var(--text);}
+        .modal-actions{display:flex;gap:.75rem;margin-top:1.5rem;}
+        @media(max-width:600px){.form-row{grid-template-columns:1fr;}.nav-links a:not(:last-child){display:none;}.main{padding:1rem;}.photos-grid{grid-template-columns:repeat(2,1fr);}}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- ✅ FIX: nav-login-btn + nav-profile-btn added — was causing JS crash -->
+<div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="track.html">🔍 Track</a>
+    <a href="login.html" id="nav-login-btn">Login</a>
+    <a href="profile.html" id="nav-profile-btn" style="display:none;"></a>
+</div>
+
+<div class="progress-bar">
+    <div class="prog-inner">
+        <div class="prog-step"><div class="prog-circle active" id="pc1">1</div><span class="prog-label active" id="pl1">Photo</span></div>
+        <div class="prog-line" id="pline1"></div>
+        <div class="prog-step"><div class="prog-circle" id="pc2">2</div><span class="prog-label" id="pl2">Location</span></div>
+        <div class="prog-line" id="pline2"></div>
+        <div class="prog-step"><div class="prog-circle" id="pc3">3</div><span class="prog-label" id="pl3">Details</span></div>
+        <div class="prog-line" id="pline3"></div>
+        <div class="prog-step"><div class="prog-circle" id="pc4">4</div><span class="prog-label" id="pl4">Submit</span></div>
+    </div>
+</div>
+
+<div class="page-hdr">
+    <h1>📸 File a Complaint</h1>
+    <p>Upload photos — AI verifies each one and alerts the government automatically</p>
+</div>
+
+<div class="main">
+    <div id="form-wrap">
+
+        <div class="notice n-yellow">
+            <span class="ico">⚠️</span>
+            <span><strong>Important:</strong> Photos must be taken directly from your camera at the problem site. Screenshots, WhatsApp photos, or downloaded images will be rejected. Up to <strong>3 photos</strong> allowed.</span>
+        </div>
+
+        <!-- STEP 1: PHOTOS -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon" style="background:#fff7ed;">📷</div>
+                <div>
+                    <h3>Step 1 — Upload Problem Photos <span style="color:var(--red)">*</span></h3>
+                    <p>Max 3 photos · 10MB each · JPG or PNG · AI verifies each photo</p>
+                </div>
+            </div>
+            <div class="photo-count-row">
+                <span class="photo-count-label" id="photo-count-label"></span>
+            </div>
+            <div class="photos-grid" id="photos-grid"></div>
+            <div class="upload-zone" id="upload-zone"
+                 onclick="document.getElementById('photo-inp').click()"
+                 ondragover="event.preventDefault();this.classList.add('over')"
+                 ondragleave="this.classList.remove('over')"
+                 ondrop="onDrop(event)">
+                <div class="uz-icon">📷</div>
+                <h4>Click to add photo</h4>
+                <p>Or drag and drop · AI will verify and detect the problem</p>
+            </div>
+            <input type="file" id="photo-inp" accept="image/*" multiple style="display:none" onchange="onPhotoSelected(event)"/>
+        </div>
+
+        <!-- STEP 2: LOCATION -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon" style="background:#eff6ff;">📍</div>
+                <div>
+                    <h3>Step 2 — Problem Location <span style="color:var(--red)">*</span></h3>
+                    <p>Click the GPS button — location fills automatically</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>GPS Coordinates <span class="req">*</span></label>
+                <p class="hint">📱 Make sure Location/GPS is turned ON in your phone settings first</p>
+                <div class="input-row">
+                    <input type="text" id="lat" placeholder="Latitude" readonly/>
+                    <input type="text" id="lng" placeholder="Longitude" readonly/>
+                    <button class="gps-btn" onclick="getGPS()">📍 Get My Location</button>
+                </div>
+                <div id="gps-status" style="font-size:.82rem;color:var(--gray);margin-top:.4rem;">👆 Click the button above to auto-detect your location</div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Ward / Area</label><input type="text" id="ward" placeholder="e.g. Vijay Nagar" readonly/></div>
+                <div class="form-group"><label>City</label><input type="text" id="city" placeholder="e.g. Indore" readonly/></div>
+            </div>
+        </div>
+
+        <!-- STEP 3: DETAILS -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon" style="background:#f0fdf4;">👤</div>
+                <div>
+                    <h3>Step 3 — Your Details <span style="color:var(--red)">*</span></h3>
+                    <p>Tell us - who is filing this complaint</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Full Name <span class="req">*</span></label>
+                    <input type="text" id="u-name" placeholder="Your full name" pattern="[A-Za-z\s]{2,50}" required/>
+                </div>
+                <div class="form-group"><label>Mobile Number</label>
+                    <input type="tel" id="u-phone" placeholder="10-digit number" pattern="[6-9][0-9]{9}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email Address <span class="req">*</span></label>
+                <p class="hint">📧 Complaint copy and status updates will be sent here</p>
+                <input type="email" id="u-email" placeholder="you@email.com" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" required/>
+            </div>
+            <div class="form-group">
+                <label>Description <span style="color:var(--gray);font-weight:400;font-size:.78rem;">(Min. 10 characters — AI will enhance the Description in complaint)</span></label>
+                <textarea id="u-desc" minlength="10" placeholder="e.g. Large pothole near bus stop causing accidents at night..." required></textarea>
+            </div>
+            <div class="check-row">
+                <input type="checkbox" id="email-dept" checked/>
+                <label for="email-dept">📧 <strong>Send complaint email to government department</strong> — AI will write a formal letter and email it with your photos. You will also receive a copy.</label>
+            </div>
+        </div>
+
+        <!-- ERROR -->
+        <div class="notice n-red" id="err-box" style="display:none;">
+            <span class="ico">❌</span>
+            <span id="err-txt"></span>
+        </div>
+
+        <button class="btn btn-orange btn-full" id="submit-btn" onclick="openModal()" disabled style="font-size:1.05rem;padding:1rem;">
+            🔍 Review &amp; Submit Complaint →
+        </button>
+        <p style="text-align:center;font-size:.78rem;color:var(--gray);margin-top:.5rem;">All verified photos + Location + Name &amp; Email required</p>
+
+    </div><!-- /form-wrap -->
+
+    <!-- SUCCESS CARD -->
+    <div class="success-card" id="success-card">
+        <div style="font-size:5rem;margin-bottom:.5rem;">🎉</div>
+        <h2>Complaint Filed Successfully!</h2>
+        <p style="color:var(--gray);">Your complaint has been verified and forwarded to the government department.</p>
+        <div class="ref-box">
+            <p style="font-size:.8rem;color:var(--gray);font-weight:700;margin-bottom:.4rem;">📋 YOUR REFERENCE ID — Save this!</p>
+            <div class="ref-id" id="ref-id-show">SAI-XXXXXXXX</div>
+            <p style="font-size:.78rem;color:var(--gray);margin-top:.4rem;">Use this ID to track your complaint status anytime</p>
+        </div>
+        <p style="font-size:.88rem;color:var(--gray);" id="email-sent-note"></p>
+        <div class="success-btns">
+            <a href="#" id="track-link" class="btn btn-blue">📋 Track Status</a>
+            <a href="#" id="wa-link" class="btn btn-wa">📱 Share on WhatsApp</a>
+            <a href="submit.html" class="btn btn-gray">+ File Another</a>
+        </div>
+    </div>
+
+</div><!-- /main -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <h3>📋 Review Your Complaint</h3>
+        <p class="sub">Check everything before submitting</p>
+        <div class="modal-row"><span class="ml">Problem Type</span><span class="mv" id="m-type">AI will detect</span></div>
+        <div class="modal-row"><span class="ml">Department</span><span class="mv" id="m-dept">AI will assign</span></div>
+        <div class="modal-row"><span class="ml">Photos</span><span class="mv" id="m-photos">—</span></div>
+        <div class="modal-row"><span class="ml">Location</span><span class="mv" id="m-loc">—</span></div>
+        <div class="modal-row"><span class="ml">Your Name</span><span class="mv" id="m-name">—</span></div>
+        <div class="modal-row"><span class="ml">Email</span><span class="mv" id="m-email">—</span></div>
+        <div class="modal-row"><span class="ml">Send Email to Dept?</span><span class="mv" id="m-perm">—</span></div>
+        <div class="modal-actions">
+            <button class="btn btn-gray btn-full" onclick="closeModal()">← Go Back</button>
+            <button class="btn btn-orange btn-full" id="confirm-btn" onclick="submitComplaint()">✅ Submit</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/submit.js"></script>
+<script>
+    function toggleNav() {
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const h = document.getElementById('hamburger');
+        const n = document.getElementById('mobile-nav');
+        if (!h.contains(e.target) && !n.contains(e.target)) {
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+</body>
+</html>

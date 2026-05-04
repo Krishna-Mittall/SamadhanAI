@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Register — SamadhanAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--blue:#1e40af;--blue2:#2563eb;--orange:#f97316;--green:#16a34a;--red:#dc2626;--bg:#f0f4ff;--white:#fff;--gray:#64748b;--border:#e2e8f0;--text:#1e293b;}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+        a{text-decoration:none;color:inherit;}
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;}.logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1rem;}.nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;}.nav-links a:hover{color:#fff;}
+        .wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem;}
+        .card{background:#fff;border:2px solid var(--border);border-radius:20px;padding:2.5rem 2.2rem;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(0,0,0,.1);}
+        .card-logo{text-align:center;margin-bottom:1.5rem;}
+        .card-logo .big{font-size:2.2rem;}
+        .card-logo h2{font-size:1.4rem;font-weight:900;color:var(--text);margin-top:.4rem;}
+        .card-logo p{font-size:.84rem;color:var(--gray);margin-top:.2rem;}
+        .benefits{margin:.5rem 0 1.5rem;}
+        .ben{display:flex;align-items:center;gap:.5rem;font-size:.83rem;color:var(--text);padding:.25rem 0;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+        .form-group{margin-bottom:1rem;}
+        .form-group label{display:block;font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.35rem;}
+        .form-group label .req{color:var(--red);margin-left:2px;}
+        input[type=email],input[type=password],input[type=text],input[type=tel]{
+            width:100%;padding:.82rem 1rem;border:2px solid var(--border);border-radius:10px;
+            font-family:'Nunito',sans-serif;font-size:.95rem;color:var(--text);background:#fff;outline:none;transition:.18s;
+        }
+        input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+        .pw-wrap{position:relative;}.pw-wrap input{padding-right:3rem;}
+        .pw-eye{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--gray);}
+        .pw-bars{display:flex;gap:.3rem;margin-top:.4rem;}
+        .pw-bar{flex:1;height:4px;border-radius:2px;background:var(--border);transition:.2s;}
+        .pw-bar.weak{background:var(--red);}.pw-bar.medium{background:var(--orange);}.pw-bar.strong{background:var(--green);}
+        .pw-lbl{font-size:.73rem;margin-top:.2rem;font-weight:700;}
+        .btn{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.9rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;border:none;transition:.18s;}
+        .btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:#ea6c00;}
+        .btn:disabled{opacity:.55;cursor:not-allowed;}
+        .notice{border-radius:10px;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;}
+        .n-red{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;}
+        .n-green{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#14532d;}
+        .footer-txt{text-align:center;margin-top:1.3rem;font-size:.88rem;color:var(--gray);}
+        .footer-txt a{color:var(--orange);font-weight:700;}
+        @media(max-width:420px){.form-row{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- ✅ FIX: nav-login-btn + nav-profile-btn added — consistent with other pages -->
+<div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="track.html">🔍 Track</a>
+    <a href="submit.html" class="nav-cta">📸 File Complaint</a>
+    <a href="login.html" id="nav-login-btn">Login</a>
+    <a href="profile.html" id="nav-profile-btn" style="display:none;"></a>
+</div>
+
+<div class="wrap">
+    <div class="card">
+        <div class="card-logo">
+            <div class="big">🚀</div>
+            <h2>Create Free Account</h2>
+            <p>Join thousands of active citizens</p>
+        </div>
+        <div class="benefits">
+            <div class="ben">✅ Track all your complaints in one place</div>
+            <div class="ben">📧 Get email updates when status changes</div>
+            <div class="ben">📊 See your complaint history & stats</div>
+        </div>
+
+        <div class="notice n-red"   id="reg-err" style="display:none;"><span>❌</span><span id="reg-err-txt"></span></div>
+        <div class="notice n-green" id="reg-ok"  style="display:none;"><span>✅</span><span>Account created! Redirecting to login...</span></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>First Name <span class="req">*</span></label>
+                <input type="text" id="reg-fname" placeholder="First name" pattern="[A-Za-z\s]{2,50}" required/>
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="reg-lname" placeholder="Last name" pattern="[A-Za-z\s]{2,50}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" id="reg-email" placeholder="you@email.com" required/>
+        </div>
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="tel" id="reg-phone" placeholder="10-digit number" pattern="[0-9]{10}"/>
+        </div>
+        <div class="form-group">
+            <label>Password <span class="req">*</span></label>
+            <div class="pw-wrap">
+                <input type="password" id="reg-pw" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value)"/>
+                <button class="pw-eye" onclick="togglePw('reg-pw',this)" type="button">👁️</button>
+            </div>
+            <div class="pw-bars"><div class="pw-bar" id="pb1"></div><div class="pw-bar" id="pb2"></div><div class="pw-bar" id="pb3"></div></div>
+            <div class="pw-lbl" id="pw-lbl" style="color:var(--gray);"></div>
+        </div>
+        <div class="form-group">
+            <label>Confirm Password <span class="req">*</span></label>
+            <div class="pw-wrap">
+                <input type="password" id="reg-conf" placeholder="Re-enter password"/>
+                <button class="pw-eye" onclick="togglePw('reg-conf',this)" type="button">👁️</button>
+            </div>
+        </div>
+
+        <button class="btn btn-orange" id="reg-btn" onclick="doRegister()">Create Account →</button>
+        <div class="footer-txt">Already have an account? <a href="login.html">Sign in →</a></div>
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script>
+    if(localStorage.getItem('sam_token')) location.href='profile.html';
+
+    function togglePw(id,btn){
+        const i=document.getElementById(id);
+        i.type=i.type==='password'?'text':'password';
+        btn.textContent=i.type==='password'?'👁️':'🙈';
+    }
+
+    function checkPwStrength(pw){
+        const b1=document.getElementById('pb1'),b2=document.getElementById('pb2'),
+            b3=document.getElementById('pb3'),lbl=document.getElementById('pw-lbl');
+        [b1,b2,b3].forEach(b=>b.className='pw-bar');
+        if(!pw){lbl.textContent='';return;}
+        const score=(pw.length>=8?1:0)+(/[A-Z]/.test(pw)?1:0)+
+            (/[0-9]/.test(pw)?1:0)+(/[^A-Za-z0-9]/.test(pw)?1:0);
+        if(score<=1){
+            b1.className='pw-bar weak';
+            lbl.style.color='var(--red)';lbl.textContent='Weak';
+        }else if(score<=3){
+            b1.className='pw-bar medium';b2.className='pw-bar medium';
+            lbl.style.color='var(--orange)';lbl.textContent='Medium';
+        }else{
+            b1.className='pw-bar strong';b2.className='pw-bar strong';b3.className='pw-bar strong';
+            lbl.style.color='var(--green)';lbl.textContent='Strong 💪';
+        }
+    }
+
+    async function doRegister(){
+        const fname=document.getElementById('reg-fname').value.trim();
+        const lname=document.getElementById('reg-lname').value.trim();
+        const email=document.getElementById('reg-email').value.trim();
+        const phone=document.getElementById('reg-phone').value.trim();
+        const pw=document.getElementById('reg-pw').value;
+        const conf=document.getElementById('reg-conf').value;
+        const err=document.getElementById('reg-err');
+        const errTxt=document.getElementById('reg-err-txt');
+        err.style.display='none';
+
+        if(!/^[A-Za-z\s]{2,50}$/.test(fname)){
+            errTxt.textContent='Please enter a valid first name.';
+            err.style.display='flex';return;
+        }
+        if(lname&&!/^[A-Za-z\s]{2,50}$/.test(lname)){
+            errTxt.textContent='Please enter a valid last name.';
+            err.style.display='flex';return;
+        }
+        if(!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)){
+            errTxt.textContent='Please enter a valid email address.';
+            err.style.display='flex';return;
+        }
+        if(phone&&!/^[0-9]{10}$/.test(phone)){
+            errTxt.textContent='Please enter a valid 10-digit mobile number.';
+            err.style.display='flex';return;
+        }
+        if(pw.length<8){
+            errTxt.textContent='Password must be at least 8 characters.';
+            err.style.display='flex';return;
+        }
+        if(pw!==conf){
+            errTxt.textContent='Passwords do not match.';
+            err.style.display='flex';return;
+        }
+
+        const btn=document.getElementById('reg-btn');
+        btn.disabled=true;
+        btn.textContent='Creating account...';
+
+        try{
+            const res=await fetch('/api/auth/register',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    name:  fname+(lname?' '+lname:''),
+                    email,
+                    phone,
+                    password: pw
+                })
+            });
+            const data=await res.json();
+            if(data.success){
+                document.getElementById('reg-ok').style.display='flex';
+                setTimeout(()=>location.href='login.html',2000);
+            }else{
+                errTxt.textContent=data.message||'Registration failed. Try a different email.';
+                err.style.display='flex';
+                btn.disabled=false;
+                btn.textContent='Create Account →';
+            }
+        }catch(e){
+            errTxt.textContent='Connection error. Please try again.';
+            err.style.display='flex';
+            btn.disabled=false;
+            btn.textContent='Create Account →';
+        }
+    }
+
+    function toggleNav(){
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click',function(e){
+        const h=document.getElementById('hamburger');
+        const n=document.getElementById('mobile-nav');
+        if(!h.contains(e.target)&&!n.contains(e.target)){
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+</body>
+</html>

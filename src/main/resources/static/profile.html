@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>My Profile — SamadhanAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--blue:#1e40af;--blue2:#2563eb;--orange:#f97316;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--bg:#f8fafc;--white:#fff;--gray:#64748b;--border:#e2e8f0;--text:#1e293b;}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);}
+        a{text-decoration:none;color:inherit;}
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;}.logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1rem;}.nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;}.nav-links a:hover{color:#fff;}
+        .logout-btn{background:rgba(239,68,68,.2);color:#fca5a5;padding:.35rem .9rem;border-radius:8px;font-size:.88rem;font-weight:700;border:1px solid rgba(239,68,68,.3);cursor:pointer;font-family:'Nunito',sans-serif;}
+        .logout-btn:hover{background:rgba(239,68,68,.3);}
+        .page-hdr{background:var(--blue);color:#fff;padding:2.5rem 2rem;text-align:center;}
+        .page-hdr h1{font-size:1.8rem;font-weight:900;margin-bottom:.3rem;}
+        .page-hdr p{color:#bfdbfe;font-size:.95rem;}
+        .main{max-width:800px;margin:0 auto;padding:2rem;}
+        .card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem;}
+        .card-hdr{display:flex;align-items:center;gap:.75rem;margin-bottom:1.3rem;}
+        .card-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+        .card-hdr h3{font-size:1.05rem;font-weight:800;color:var(--text);}
+        .card-hdr p{font-size:.78rem;color:var(--gray);}
+        .avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#f59e0b);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(249,115,22,.3);}
+        .role-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .75rem;border-radius:20px;font-size:.72rem;font-weight:800;margin-top:.4rem;}
+        .role-USER{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}
+        .role-ADMIN{background:#fff7ed;color:var(--orange);border:1.5px solid #fed7aa;}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.5rem;}
+        .stat-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:1.2rem;text-align:center;transition:.2s;}
+        .stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.07);}
+        .stat-n{font-size:1.9rem;font-weight:900;line-height:1;margin-bottom:.25rem;}
+        .stat-l{font-size:.7rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;}
+        .tabs{display:flex;gap:.4rem;background:#f1f5f9;padding:.35rem;border-radius:12px;border:2px solid var(--border);width:fit-content;margin-bottom:1.5rem;}
+        .tab-btn{padding:.55rem 1.4rem;border-radius:9px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;color:var(--gray);border:none;background:none;transition:.18s;}
+        .tab-btn.active{background:#fff;color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,.1);}
+        .tab-pane{display:none;}.tab-pane.active{display:block;}
+        .comp-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1.5px solid var(--border);gap:1rem;flex-wrap:wrap;}
+        .comp-row:last-child{border:none;}
+        .comp-ref{font-size:.92rem;font-weight:800;color:var(--text);}
+        .comp-meta{font-size:.76rem;color:var(--gray);margin-top:.15rem;}
+        .status-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .8rem;border-radius:20px;font-size:.76rem;font-weight:700;}
+        .s-PENDING{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a;}
+        .s-IN_PROGRESS{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}
+        .s-RESOLVED{background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;}
+        .s-REJECTED{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca;}
+        .form-group{margin-bottom:1.1rem;}
+        .form-group label{display:block;font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+        input[type=text],input[type=tel],input[type=password]{width:100%;padding:.82rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;color:var(--text);background:#fff;outline:none;transition:.18s;}
+        input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+        .pw-wrap{position:relative;}.pw-wrap input{padding-right:3rem;}
+        .pw-eye{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--gray);}
+        .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.75rem 1.5rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;border:none;transition:.18s;text-decoration:none;}
+        .btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:#ea6c00;}
+        .btn-blue{background:var(--blue2);color:#fff;}.btn-blue:hover{background:var(--blue);}
+        .btn-gray{background:#f1f5f9;color:var(--text);border:2px solid var(--border);}.btn-gray:hover{background:#e2e8f0;}
+        .btn-sm{padding:.5rem 1rem;font-size:.82rem;}
+        .notice{border-radius:10px;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;}
+        .n-green{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#14532d;}
+        .n-red{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;}
+        .admin-banner{background:linear-gradient(135deg,var(--orange),#dc6b00);border-radius:14px;padding:1.4rem 1.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
+        .admin-banner h4{color:#fff;font-size:1rem;font-weight:900;}
+        .admin-banner p{color:rgba(255,255,255,.85);font-size:.82rem;margin-top:.15rem;}
+        .loading{text-align:center;padding:2rem;color:var(--gray);}
+        .spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--blue2);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .6rem;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        @media(max-width:600px){.nav-links a{display:none;}.tabs{width:100%;}.tab-btn{flex:1;text-align:center;}}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="track.html">🔍 Track</a>
+    <a href="submit.html" class="nav-cta">📸 File Complaint</a>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+</div>
+
+<div class="page-hdr">
+    <h1>👤 My Profile</h1>
+    <p>Manage your account and track all your complaints</p>
+</div>
+
+<div class="main">
+
+    <!-- ADMIN BANNER -->
+    <div class="admin-banner" id="admin-banner" style="display:none;">
+        <div>
+            <h4>🛡️ You have Admin Access</h4>
+            <p>Manage all users, complaints, and update statuses</p>
+        </div>
+        <a href="admin.html" class="btn" style="background:#fff;color:var(--orange);font-weight:800;">Open Admin Panel →</a>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:1.2rem;">
+            <div class="avatar" id="avatar">?</div>
+            <div>
+                <div style="font-size:1.3rem;font-weight:900;" id="p-name">Loading...</div>
+                <div style="font-size:.85rem;color:var(--gray);" id="p-email">—</div>
+                <div id="p-role" class="role-badge role-USER" style="margin-top:.4rem;">USER</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-n" id="ms-total" style="color:var(--blue)">—</div><div class="stat-l">Total Filed</div></div>
+        <div class="stat-card"><div class="stat-n" id="ms-res"   style="color:var(--green)">—</div><div class="stat-l">✅ Resolved</div></div>
+        <div class="stat-card"><div class="stat-n" id="ms-pend"  style="color:var(--orange)">—</div><div class="stat-l">⏳ Pending</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('complaints',this)">📋 My Complaints</button>
+        <button class="tab-btn"        onclick="switchTab('settings',this)">⚙️ Settings</button>
+    </div>
+
+    <!-- TAB: COMPLAINTS -->
+    <div class="tab-pane active" id="tab-complaints">
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+                <div style="font-size:1rem;font-weight:900;">My Complaints</div>
+                <a href="submit.html" class="btn btn-orange btn-sm">+ File New</a>
+            </div>
+            <div id="comp-loading" class="loading"><div class="spinner"></div>Loading complaints...</div>
+            <div id="comp-list" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- TAB: SETTINGS -->
+    <div class="tab-pane" id="tab-settings">
+
+        <!-- Edit Profile -->
+        <div class="card">
+            <div class="card-hdr">
+                <div class="card-ico" style="background:#fff7ed;">✏️</div>
+                <div><h3>Edit Profile</h3><p>Update your display name and phone</p></div>
+            </div>
+            <div class="notice n-green" id="prof-ok"  style="display:none;"><span>✅</span><span>Profile updated!</span></div>
+            <div class="notice n-red"   id="prof-err" style="display:none;"><span>❌</span><span id="prof-err-txt"></span></div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="edit-name" placeholder="Your full name"/>
+            </div>
+            <!-- ✅ FIX: edit-phone add kiya — was missing, profile.js use karta hai -->
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="edit-phone" placeholder="10-digit number"/>
+            </div>
+            <button class="btn btn-orange" onclick="saveProfile()">💾 Save Profile</button>
+        </div>
+
+        <!-- Change Password -->
+        <div class="card">
+            <div class="card-hdr">
+                <div class="card-ico" style="background:#eff6ff;">🔒</div>
+                <div><h3>Change Password</h3><p>Keep your account secure</p></div>
+            </div>
+            <div class="notice n-green" id="pw-ok"  style="display:none;"><span>✅</span><span>Password changed!</span></div>
+            <div class="notice n-red"   id="pw-err" style="display:none;"><span>❌</span><span id="pw-err-txt"></span></div>
+            <div class="form-group">
+                <label>Current Password</label>
+                <div class="pw-wrap">
+                    <input type="password" id="old-pw" placeholder="Current password"/>
+                    <button class="pw-eye" onclick="togglePw('old-pw',this)" type="button">👁️</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <div class="pw-wrap">
+                    <!-- ✅ FIX: placeholder "Min. 6 characters" — matches backend @Size(min=6) + JS validation -->
+                    <input type="password" id="new-pw" placeholder="Min. 6 characters"/>
+                    <button class="pw-eye" onclick="togglePw('new-pw',this)" type="button">👁️</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Confirm New Password</label>
+                <div class="pw-wrap">
+                    <input type="password" id="conf-pw" placeholder="Re-enter new password"/>
+                    <button class="pw-eye" onclick="togglePw('conf-pw',this)" type="button">👁️</button>
+                </div>
+            </div>
+            <button class="btn btn-blue" onclick="changePw()">🔒 Update Password</button>
+        </div>
+    </div>
+
+</div><!-- /main -->
+
+<script>
+    if (!localStorage.getItem('sam_token')) { location.href = 'login.html'; }
+
+    // ✅ FIX: switchTab removed — profile.js already defines it
+    // Duplicate was causing override confusion
+
+    function toggleNav() {
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const h = document.getElementById('hamburger');
+        const n = document.getElementById('mobile-nav');
+        if (!h.contains(e.target) && !n.contains(e.target)) {
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+
+<script src="js/auth.js"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>

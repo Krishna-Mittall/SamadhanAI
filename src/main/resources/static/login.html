@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Login — SamadhanAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--blue:#1e40af;--blue2:#2563eb;--orange:#f97316;--green:#16a34a;--red:#dc2626;--bg:#f0f4ff;--white:#fff;--gray:#64748b;--border:#e2e8f0;--text:#1e293b;}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+        a{text-decoration:none;color:inherit;}
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;}.logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1rem;}.nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;}.nav-links a:hover{color:#fff;}
+        .wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem;}
+        .card{background:#fff;border:2px solid var(--border);border-radius:20px;padding:2.8rem 2.5rem;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.1);}
+        .card-logo{text-align:center;margin-bottom:2rem;}
+        .card-logo .big{font-size:2.5rem;}
+        .card-logo h2{font-size:1.5rem;font-weight:900;color:var(--text);margin-top:.5rem;}
+        .card-logo p{font-size:.85rem;color:var(--gray);margin-top:.2rem;}
+        .form-group{margin-bottom:1.2rem;}
+        .form-group label{display:block;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+        input[type=email],input[type=password],input[type=text],input[type=tel]{
+            width:100%;padding:.85rem 1rem;border:2px solid var(--border);border-radius:10px;
+            font-family:'Nunito',sans-serif;font-size:1rem;color:var(--text);background:#fff;
+            outline:none;transition:.18s;
+        }
+        input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+        .pw-wrap{position:relative;}
+        .pw-wrap input{padding-right:3rem;}
+        .pw-eye{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;padding:.2rem;color:var(--gray);}
+        .pw-eye:hover{color:var(--text);}
+        .btn{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.9rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;border:none;transition:.18s;}
+        .btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:#ea6c00;}
+        .btn:disabled{opacity:.55;cursor:not-allowed;}
+        .divider{display:flex;align-items:center;gap:.75rem;margin:1.2rem 0;color:var(--gray);font-size:.82rem;}
+        .divider::before,.divider::after{content:'';flex:1;height:1.5px;background:var(--border);}
+        .notice{border-radius:10px;padding:.9rem 1rem;font-size:.86rem;display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;}
+        .n-red{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;}
+        .n-green{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#14532d;}
+        .footer-txt{text-align:center;margin-top:1.5rem;font-size:.88rem;color:var(--gray);}
+        .footer-txt a{color:var(--orange);font-weight:700;}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="submit.html" class="nav-cta">📸 File Complaint</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+</div>
+
+<div class="wrap">
+    <div class="card">
+        <div class="card-logo">
+            <div class="big">👋</div>
+            <h2>Welcome Back!</h2>
+            <p>Sign in to track all your complaints</p>
+        </div>
+
+        <div class="notice n-red" id="login-err" style="display:none;">
+            <span>❌</span><span id="login-err-txt"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="login-email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="pw-wrap">
+                <input type="password" id="login-pw" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/>
+                <button class="pw-eye" onclick="togglePw('login-pw',this)" type="button">👁️</button>
+            </div>
+        </div>
+
+        <button class="btn btn-orange" id="login-btn" onclick="doLogin()">Sign In →</button>
+
+        <div class="divider">or</div>
+
+        <a href="submit.html" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem;border-radius:10px;background:#f8fafc;border:2px solid var(--border);font-weight:700;font-size:.95rem;color:var(--text);">
+            📸 File Complaint Without Account
+        </a>
+
+        <div class="footer-txt">Don't have an account? <a href="register.html">Create one free →</a></div>
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script>
+    if(localStorage.getItem('sam_token')) location.href='profile.html';
+
+    function togglePw(id,btn){
+        const i=document.getElementById(id);
+        i.type=i.type==='password'?'text':'password';
+        btn.textContent=i.type==='password'?'👁️':'🙈';
+    }
+
+    async function doLogin(){
+        const email=document.getElementById('login-email').value.trim();
+        const pw=document.getElementById('login-pw').value;
+        const err=document.getElementById('login-err');
+        const errTxt=document.getElementById('login-err-txt');
+        err.style.display='none';
+
+        if(!email||!pw){
+            errTxt.textContent='Please enter email and password.';
+            err.style.display='flex';
+            return;
+        }
+
+        const btn=document.getElementById('login-btn');
+        btn.disabled=true;
+        btn.textContent='Signing in...';
+
+        try{
+            const res=await fetch('/api/auth/login',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({email,password:pw})
+            });
+            const data=await res.json();
+
+            if(data.success){
+                // ✅ FIX: data.data is the auth object directly — no nested .user field
+                // Backend AuthResponse: {token, type, id, name, email, role}
+                localStorage.setItem('sam_token', data.data.token);
+                localStorage.setItem('sam_user',  JSON.stringify(data.data));
+                location.href='profile.html';
+            }else{
+                errTxt.textContent=data.message||'Invalid email or password.';
+                err.style.display='flex';
+                btn.disabled=false;
+                btn.textContent='Sign In →';
+            }
+        }catch(e){
+            errTxt.textContent='Connection error. Please try again.';
+            err.style.display='flex';
+            btn.disabled=false;
+            btn.textContent='Sign In →';
+        }
+    }
+
+    function toggleNav(){
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click',function(e){
+        const h=document.getElementById('hamburger');
+        const n=document.getElementById('mobile-nav');
+        if(!h.contains(e.target)&&!n.contains(e.target)){
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+</body>
+</html>

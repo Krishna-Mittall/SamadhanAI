@@ -1,0 +1,33 @@
+package com.samadhanai.samadhanai.Common.Enums;
+
+public enum ComplaintType {
+
+    POTHOLE,
+    BROKEN_ROAD,
+
+    WATERLOGGING,
+    WATER_LEAK,
+    NO_WATER_SUPPLY,
+    DIRTY_WATER_SUPPLY,
+
+    OPEN_MANHOLE,
+    SEWAGE_OVERFLOW,
+    BLOCKED_DRAIN,
+
+    GARBAGE,
+    GARBAGE_DUMP,
+    DEAD_ANIMAL,
+
+    BROKEN_STREETLIGHT,
+    POWER_OUTAGE,
+    FALLEN_ELECTRIC_WIRE,
+
+    BROKEN_FOOTPATH,
+    ENCROACHMENT,
+    STRAY_ANIMALS,
+
+    FALLEN_TREE,
+    PARK_MAINTENANCE,
+
+    OTHER
+}

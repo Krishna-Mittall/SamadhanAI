@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Public Dashboard — SamadhanAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--blue:#1e40af;--blue2:#2563eb;--orange:#f97316;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--bg:#f8fafc;--white:#fff;--gray:#64748b;--border:#e2e8f0;--text:#1e293b;}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);}
+        a{text-decoration:none;color:inherit;}
+        nav{background:var(--blue);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+        .logo{font-size:1.4rem;font-weight:900;color:#fff;}.logo span{color:#fbbf24;}
+        .nav-links{display:flex;align-items:center;gap:1rem;}.nav-links a{color:#bfdbfe;font-size:.9rem;font-weight:600;}.nav-links a:hover{color:#fff;}
+        .nav-cta{background:var(--orange)!important;color:#fff!important;padding:.4rem 1.1rem;border-radius:8px;font-weight:700!important;}
+        .page-hdr{background:var(--blue);color:#fff;padding:2.5rem 2rem;text-align:center;}
+        .page-hdr h1{font-size:1.8rem;font-weight:900;margin-bottom:.3rem;}
+        .page-hdr p{color:#bfdbfe;font-size:.95rem;}
+        .main{max-width:1100px;margin:0 auto;padding:2rem;}
+        .card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem;}
+        .card-title{font-size:1.05rem;font-weight:900;color:var(--text);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem;}
+        .card-title span{font-size:.8rem;font-weight:600;color:var(--gray);}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-bottom:1.5rem;}
+        .stat-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:1.4rem 1rem;text-align:center;transition:.2s;}
+        .stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08);}
+        .stat-n{font-size:2.2rem;font-weight:900;line-height:1;margin-bottom:.25rem;}
+        .stat-l{font-size:.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;}
+        .highlights{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;}
+        .hl-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:1.2rem;}
+        .hl-lbl{font-size:.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;}
+        .hl-val{font-size:1rem;font-weight:800;color:var(--text);}
+        .table-wrap{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;font-size:.87rem;}
+        thead th{font-size:.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;padding:.75rem 1rem;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;background:#f8fafc;}
+        tbody td{padding:.85rem 1rem;border-bottom:1.5px solid var(--border);color:var(--text);vertical-align:middle;}
+        tbody tr:last-child td{border:none;}
+        tbody tr:hover td{background:#f8fafc;}
+        .grade{padding:.2rem .65rem;border-radius:6px;font-size:.78rem;font-weight:800;display:inline-block;}
+        .g-A{background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;}
+        .g-B{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}
+        .g-C{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a;}
+        .g-D{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca;}
+        .s-PENDING{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a;padding:.2rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700;display:inline-flex;align-items:center;gap:.25rem;}
+        .s-IN_PROGRESS{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;padding:.2rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700;display:inline-flex;align-items:center;gap:.25rem;}
+        .s-RESOLVED{background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;padding:.2rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700;display:inline-flex;align-items:center;gap:.25rem;}
+        .s-REJECTED{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca;padding:.2rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700;display:inline-flex;align-items:center;gap:.25rem;}
+        .ign-item{border:2px solid #fecaca;border-left:4px solid var(--red);border-radius:12px;padding:1.1rem;margin-bottom:.8rem;background:#fff;}
+        .ign-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+        .ign-ref{font-weight:800;color:var(--text);font-size:.95rem;}
+        .ign-meta{font-size:.78rem;color:var(--gray);margin-top:.2rem;}
+        .days-chip{background:var(--red);color:#fff;padding:.2rem .75rem;border-radius:20px;font-size:.74rem;font-weight:800;white-space:nowrap;}
+        .ign-warn{font-size:.76rem;color:var(--orange);font-weight:700;margin-top:.2rem;}
+        .notice{border-radius:10px;padding:.9rem 1rem;font-size:.86rem;display:flex;align-items:flex-start;gap:.6rem;line-height:1.55;}
+        .n-blue{background:#eff6ff;border:1.5px solid #bfdbfe;color:#1e40af;}
+        .n-yellow{background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;}
+        .chart-box{position:relative;height:270px;}
+        .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:8px;font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;border:none;transition:.18s;text-decoration:none;}
+        .btn-blue-soft{background:#eff6ff;color:var(--blue2);border:1.5px solid #bfdbfe;}.btn-blue-soft:hover{background:#dbeafe;}
+        .loading{text-align:center;padding:2.5rem;color:var(--gray);font-size:.9rem;}
+        .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--blue2);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .75rem;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+    </style>
+</head>
+<body>
+
+<!-- ✅ CHANGE 1 -->
+<nav>
+    <a href="index.html" class="logo">Samadhan<span>AI</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- ✅ CHANGE 2 -->
+<div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="track.html">🔍 Track</a>
+    <a href="submit.html" class="nav-cta">📸 File Complaint</a>
+    <a href="login.html" id="nav-login-btn">Login</a>
+    <a href="profile.html" id="nav-profile-btn" style="display:none;"></a>
+</div>
+
+
+<div class="page-hdr">
+    <h1>📊 Public Dashboard</h1>
+    <p>Live data of all civic complaints — government is accountable to citizens</p>
+</div>
+
+<div class="main">
+
+    <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="stat-n" id="s-total" style="color:var(--blue)">—</div><div class="stat-l">📋 Total Filed</div></div>
+        <div class="stat-card"><div class="stat-n" id="s-res" style="color:var(--green)">—</div><div class="stat-l">✅ Resolved</div></div>
+        <div class="stat-card"><div class="stat-n" id="s-pend" style="color:var(--orange)">—</div><div class="stat-l">⏳ Pending</div></div>
+        <div class="stat-card"><div class="stat-n" id="s-ign" style="color:var(--red)">—</div><div class="stat-l">🚨 Ignored 30d+</div></div>
+        <div class="stat-card"><div class="stat-n" id="s-fake" style="color:var(--gray)">—</div><div class="stat-l">🚫 Fake Rejected</div></div>
+    </div>
+
+    <div class="highlights">
+        <div class="hl-card"><div class="hl-lbl">🗺️ Most Complaints — Ward</div><div class="hl-val" id="hl-ward">Loading...</div></div>
+        <div class="hl-card"><div class="hl-lbl">😞 Worst Performing Department</div><div class="hl-val" style="color:var(--red)" id="hl-worst">Loading...</div></div>
+        <div class="hl-card"><div class="hl-lbl">🔖 Most Common Problem</div><div class="hl-val" style="color:var(--orange)" id="hl-type">Loading...</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🗺️ Complaints by Ward <span>— Top 10 wards</span></div>
+        <div id="ward-loading" class="loading"><div class="spinner"></div>Loading ward data...</div>
+        <div id="ward-chart-box" class="chart-box" style="display:none;"><canvas id="ward-chart"></canvas></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🏛️ Department Performance <span>— Worst to Best</span></div>
+        <div class="notice n-blue" style="margin-bottom:1rem;">
+            <span style="flex-shrink:0;">ℹ️</span>
+            <span>Grade A = 80%+ resolved &nbsp;|&nbsp; B = 60–79% &nbsp;|&nbsp; C = 40–59% &nbsp;|&nbsp; D = below 40%</span>
+        </div>
+        <div id="dept-loading" class="loading"><div class="spinner"></div>Loading department data...</div>
+        <div class="table-wrap" id="dept-table-wrap" style="display:none;">
+            <table>
+                <thead><tr>
+                    <th>Department</th><th>Total</th><th>✅ Resolved</th><th>⏳ Pending</th><th>🚨 Ignored</th><th>Resolution %</th><th>Avg Days</th><th>Grade</th>
+                </tr></thead>
+                <tbody id="dept-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🚨 <span style="color:var(--red);font-size:1rem;font-weight:900;">Ignored for 30+ Days</span> <span>— No action taken</span></div>
+        <div class="notice n-yellow" style="margin-bottom:1rem;">
+            <span style="flex-shrink:0;">⚠️</span>
+            <span>These complaints received no government response for 30+ days. Auto-reminder sent every 15 days.</span>
+        </div>
+        <div id="ign-loading" class="loading"><div class="spinner"></div>Loading...</div>
+        <div id="ign-list"></div>
+    </div>
+
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+    // ✅ CHANGE 3
+    function toggleNav() {
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const h = document.getElementById('hamburger');
+        const n = document.getElementById('mobile-nav');
+        if (!h.contains(e.target) && !n.contains(e.target)) {
+            h.classList.remove('open');
+            n.classList.remove('open');
+        }
+    });
+</script>
+</body>
+</html>
