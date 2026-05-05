@@ -364,12 +364,7 @@ async function submitComplaint() {
         fd.append('sendEmailToDepartment', document.getElementById('email-dept')?.checked ? 'true' : 'false');
         // ✅ FIX: ward + city removed — backend gets these from lat/lng via LocationService
 
-        const token = localStorage.getItem('sam_token');
-        const url   = token
-            ? '/api/complaints?_token=' + encodeURIComponent(token)
-            : '/api/complaints';
-
-        const data = await Api.upload(url, fd);
+        const data = await Api.upload('/api/complaints', fd);
 
         if (data.success) {
             closeModal();
