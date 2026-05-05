@@ -53,12 +53,13 @@ public class EmailService {
 
 
     private final SendGridEmailService sendGridEmailService;
-
-
+    private final JavaMailSender mailSender;
 
     @Value("${app.upload.dir}")
-
     private String uploadDir;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
 
 
