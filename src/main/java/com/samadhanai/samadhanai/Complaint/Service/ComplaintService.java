@@ -44,38 +44,51 @@ public class ComplaintService {
             List<MultipartFile> photos,
             Long userId) {
 
-        // Step 1: Verify ALL photos
-        for (int i = 0; i < photos.size(); i++) {
-            MultipartFile photo = photos.get(i);
-            FakePhotoDetectionService.FakeDetectionResult fakeResult =
-                    fakePhotoDetectionService.detectFake(
-                            photo, dto.getLatitude(), dto.getLongitude());
+        log.info("Submitting complaint for user: {}, photos count: {}", userId, photos != null ? photos.size() : 0);
 
-            if (!fakeResult.isReal()) {
-                String photoName = photo.getOriginalFilename() != null
-                        ? photo.getOriginalFilename() : ("Photo " + (i + 1));
-                throw new AppExceptions.FakePhotoException(
-                        "Photo \"" + photoName + "\": " + fakeResult.getReason());
+        try {
+            // Step 1: Verify ALL photos
+            for (int i = 0; i < photos.size(); i++) {
+                MultipartFile photo = photos.get(i);
+                log.debug("Analyzing photo {}: {}", i + 1, photo.getOriginalFilename());
+                
+                FakePhotoDetectionService.FakeDetectionResult fakeResult =
+                        fakePhotoDetectionService.detectFake(
+                                photo, dto.getLatitude(), dto.getLongitude());
+
+                if (!fakeResult.isReal()) {
+                    String photoName = photo.getOriginalFilename() != null
+                            ? photo.getOriginalFilename() : ("Photo " + (i + 1));
+                    log.warn("Photo {} rejected: {}", photoName, fakeResult.getReason());
+                    throw new AppExceptions.FakePhotoException(
+                            "Photo \"" + photoName + "\": " + fakeResult.getReason());
+                }
             }
-        }
 
         // Step 2: AI analysis on first photo
         PhotoAnalysisService.PhotoAnalysisResult aiResult =
                 photoAnalysisService.analyzePhoto(photos.get(0), dto.getUserDescription());
 
         // Step 3: Save photos
+        log.debug("Saving {} photos", photos.size());
         String mainPhotoPath = savePhoto(photos.get(0), null);
+        log.info("Main photo saved: {}", mainPhotoPath);
+        
         List<String> extraPaths = new ArrayList<>();
         for (int i = 1; i < photos.size(); i++) {
-            extraPaths.add(savePhoto(photos.get(i), null));
+            String extraPath = savePhoto(photos.get(i), null);
+            extraPaths.add(extraPath);
+            log.debug("Extra photo {} saved: {}", i, extraPath);
         }
 
         // Step 4: Reverse geocode
+        log.debug("Reverse geocoding coordinates: {}, {}", dto.getLatitude(), dto.getLongitude());
         LocationService.LocationResult location =
                 locationService.reverseGeocode(dto.getLatitude(), dto.getLongitude());
 
         // Step 5: Generate reference ID
         String referenceId = generateReferenceId();
+        log.info("Generated reference ID: {}", referenceId);
 
         // Step 6: Build and save
         Complaint complaint = Complaint.builder()
@@ -104,18 +117,27 @@ public class ComplaintService {
                 .status(ComplaintStatus.PENDING)
                 .build();
 
+        log.debug("Saving complaint to database...");
         Complaint saved = complaintRepository.save(complaint);
+        log.info("Complaint saved with ID: {}, Reference: {}", saved.getId(), saved.getReferenceId());
 
         // Step 7: Email
         if (dto.isSendEmailToDepartment()) {
+            log.info("Sending email to department for complaint: {}", saved.getReferenceId());
             EmailStatusDTO emailStatus = emailService.sendComplaintToDepartment(saved);
             saved.setEmailSent(emailStatus.isSent());
             saved.setDepartmentEmailSentTo(emailStatus.getSentTo());
             saved.setEmailSentAt(LocalDateTime.now());
             complaintRepository.save(saved);
+            log.info("Email status - Sent: {}, To: {}", emailStatus.isSent(), emailStatus.getSentTo());
         }
 
         return toResponse(saved);
+        
+        } catch (Exception e) {
+            log.error("Failed to submit complaint: {}", e.getMessage(), e);
+            throw new AppExceptions.ComplaintSubmissionException("Failed to save complaint: " + e.getMessage(), e);
+        }
     }
 
     // ─── Track ────────────────────────────────────────────
