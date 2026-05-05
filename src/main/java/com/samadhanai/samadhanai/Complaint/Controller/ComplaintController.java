@@ -76,14 +76,26 @@ public class ComplaintController {
                     .success(false).message("At least one photo is required.")
                     .timestamp(LocalDateTime.now()).build());
         }
-        if (photos.size() > 3) {
+        
+        // Filter out empty files
+        List<MultipartFile> validPhotos = photos.stream()
+                .filter(photo -> photo != null && !photo.isEmpty())
+                .collect(java.util.stream.Collectors.toList());
+                
+        if (validPhotos.isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .success(false).message("At least one valid photo is required.")
+                    .timestamp(LocalDateTime.now()).build());
+        }
+        
+        if (validPhotos.size() > 3) {
             return ResponseEntity.badRequest().body(ApiResponse.builder()
                     .success(false).message("Maximum 3 photos allowed.")
                     .timestamp(LocalDateTime.now()).build());
         }
 
         Long userId = (currentUser != null) ? currentUser.getId() : null;
-        ComplaintDTOs.Response result = complaintService.submitComplaint(dto, photos, userId);
+        ComplaintDTOs.Response result = complaintService.submitComplaint(dto, validPhotos, userId);
 
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true).message("Complaint submitted successfully!")
