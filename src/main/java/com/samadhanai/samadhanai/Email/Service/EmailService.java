@@ -97,8 +97,9 @@ public class EmailService {
                     .build();
 
         } catch (MessagingException e) {
-            log.error("❌ Email failed for {}: {}",
-                    complaint.getReferenceId(), e.getMessage());
+            log.error("❌ Email failed for {}: {} | Full Error: {}",
+                    complaint.getReferenceId(), e.getMessage(), e.toString());
+            e.printStackTrace();
             return EmailStatusDTO.builder()
                     .sent(false)
                     .sentTo(deptEmail)
