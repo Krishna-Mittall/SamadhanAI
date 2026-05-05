@@ -32,17 +32,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        // ✅ Check Authorization header first, then _token URL query param
-        // Cloudflare strips Authorization header on multipart — URL query param always accessible
+        // Accept token only from Authorization header
         String token = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-        } else {
-            String paramToken = request.getParameter("_token");
-            if (paramToken != null && !paramToken.isBlank()) {
-                token = paramToken;
-                log.debug("Token read from URL query param (Cloudflare fallback)");
-            }
         }
 
         // No token → skip (public endpoints handle themselves)

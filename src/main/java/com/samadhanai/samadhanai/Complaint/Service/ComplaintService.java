@@ -304,10 +304,11 @@ public class ComplaintService {
 
     private String savePhoto(MultipartFile file, String subfolder) {
         try {
-            String dir = uploadDir + (subfolder != null ? subfolder + "/" : "");
-            Files.createDirectories(Paths.get(dir));
+            Path baseDir = Paths.get(uploadDir);
+            Path dirPath = subfolder != null ? baseDir.resolve(subfolder) : baseDir;
+            Files.createDirectories(dirPath);
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path target = Paths.get(dir + filename);
+            Path target = dirPath.resolve(filename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
             return (subfolder != null ? subfolder + "/" : "") + filename;
         } catch (IOException e) {

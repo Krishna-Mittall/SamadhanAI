@@ -93,9 +93,17 @@ public class ComplaintController {
     // ─── GET /api/complaints/{referenceId} ────────────────
     @GetMapping("/{referenceId}")
     public ResponseEntity<ApiResponse> trackComplaint(
-            @PathVariable String referenceId) {
+            @PathVariable String referenceId,
+            @AuthenticationPrincipal User currentUser) {
 
         ComplaintDTOs.Response result = complaintService.trackComplaint(referenceId);
+        if (currentUser == null) {
+            result.setUserId(null);
+            result.setUserEmail(null);
+            result.setUserPhone(null);
+            result.setLatitude(null);
+            result.setLongitude(null);
+        }
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true).message("OK")
                 .data(result).timestamp(LocalDateTime.now()).build());

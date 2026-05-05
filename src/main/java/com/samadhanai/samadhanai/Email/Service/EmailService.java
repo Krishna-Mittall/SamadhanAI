@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -479,7 +480,7 @@ public class EmailService {
 
         // Main photo
         if (complaint.getPhotoPath() != null) {
-            File f = new File(uploadDir + complaint.getPhotoPath());
+            File f = Paths.get(uploadDir, complaint.getPhotoPath()).toFile();
             if (f.exists()) {
                 helper.addAttachment(
                         prefix + "_photo_" + photoNum + ".jpg",
@@ -496,7 +497,7 @@ public class EmailService {
                 && !complaint.getExtraPhotoPaths().isBlank()) {
             for (String path : complaint.getExtraPhotoPaths().split(",")) {
                 if (path.isBlank()) continue;
-                File f = new File(uploadDir + path.trim());
+                File f = Paths.get(uploadDir, path.trim()).toFile();
                 if (f.exists()) {
                     helper.addAttachment(
                             prefix + "_photo_" + photoNum + ".jpg",

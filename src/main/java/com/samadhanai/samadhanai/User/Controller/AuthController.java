@@ -6,6 +6,7 @@ import com.samadhanai.samadhanai.User.Service.UserService;
 import com.samadhanai.samadhanai.User.model.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +55,13 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse> getCurrentUser(
             @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.builder()
+                    .success(false)
+                    .message("Unauthorized")
+                    .timestamp(LocalDateTime.now())
+                    .build());
+        }
 
         UserDTOs.UserResponse result = userService.getProfile(currentUser.getId());
 
