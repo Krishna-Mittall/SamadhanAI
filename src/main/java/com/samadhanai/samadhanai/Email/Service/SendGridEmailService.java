@@ -149,6 +149,187 @@ public class SendGridEmailService {
         }
     }
 
+    public void sendStatusUpdateToCitizen(Complaint complaint, 
+                                          ComplaintStatus oldStatus, 
+                                          ComplaintStatus newStatus) {
+        log.info("🚀 SendGrid status update for: {} → {} for: {}", 
+                oldStatus, newStatus, complaint.getReferenceId());
+        
+        try {
+            Email from = new Email(fromEmail, fromName);
+            Email to = new Email(complaint.getUserEmail());
+            
+            String statusEmoji = switch (newStatus) {
+                case RESOLVED -> "✅";
+                case IN_PROGRESS -> "🔄";
+                case REJECTED -> "❌";
+                default -> "⏳";
+            };
+            
+            String subject = String.format("📋 Update on Your Complaint %s — Status: %s %s", 
+                    complaint.getReferenceId(), statusEmoji, newStatus.name());
+            
+            Content content = new Content("text/html", buildStatusUpdateEmail(complaint, oldStatus, newStatus));
+            Mail mail = new Mail(from, subject, to, content);
+            
+            SendGrid sg = new SendGrid(sendGridApiKey);
+            Request request = new Request();
+            
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            
+            Response response = sg.api(request);
+            
+            if (response.getStatusCode() == 202) {
+                log.info("✅ Status update email sent to: {}", complaint.getUserEmail());
+            } else {
+                log.error("❌ Status update failed: {} - {}", response.getStatusCode(), response.getBody());
+            }
+            
+        } catch (Exception e) {
+            log.error("❌ SendGrid status update error: {}", e.getMessage());
+        }
+    }
+    
+    public EmailStatusDTO sendReminderToDepartment(Complaint complaint) {
+        log.info("🚀 SendGrid reminder for: {}", complaint.getReferenceId());
+        
+        String deptEmail = getDepartmentEmail(complaint.getAssignedDepartment());
+        
+        try {
+            Email from = new Email(fromEmail, fromName);
+            Email to = new Email(deptEmail);
+            
+            String subject = String.format("⚠️ REMINDER: Complaint Pending 15+ Days — %s", 
+                    complaint.getReferenceId());
+            
+            Content content = new Content("text/html", buildReminderEmail(complaint));
+            Mail mail = new Mail(from, subject, to, content);
+            
+            // Add CC if citizen email exists
+            if (complaint.getUserEmail() != null) {
+                mail.personalization.get(0).addCc(new Email(complaint.getUserEmail()));
+            }
+            
+            // Add attachments
+            if (complaint.getPhotoPath() != null) {
+                addAttachment(mail, uploadDir + complaint.getPhotoPath(), 
+                    "reminder_" + complaint.getReferenceId() + "_photo_1.jpg");
+            }
+            
+            SendGrid sg = new SendGrid(sendGridApiKey);
+            Request request = new Request();
+            
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            
+            Response response = sg.api(request);
+            
+            if (response.getStatusCode() == 202) {
+                log.info("✅ Reminder sent to: {} for: {}", deptEmail, complaint.getReferenceId());
+                return EmailStatusDTO.builder()
+                        .sent(true)
+                        .sentTo(deptEmail)
+                        .sentAt(LocalDateTime.now())
+                        .complaintReferenceId(complaint.getReferenceId())
+                        .build();
+            } else {
+                log.error("❌ Reminder failed: {} - {}", response.getStatusCode(), response.getBody());
+                return EmailStatusDTO.builder()
+                        .sent(false)
+                        .sentTo(deptEmail)
+                        .failureReason("SendGrid API error: " + response.getBody())
+                        .complaintReferenceId(complaint.getReferenceId())
+                        .build();
+            }
+            
+        } catch (Exception e) {
+            log.error("❌ SendGrid reminder error: {}", e.getMessage());
+            return EmailStatusDTO.builder()
+                    .sent(false)
+                    .sentTo(deptEmail)
+                    .failureReason(e.getMessage())
+                    .complaintReferenceId(complaint.getReferenceId())
+                    .build();
+        }
+    }
+    
+    private String buildStatusUpdateEmail(Complaint complaint, 
+                                          ComplaintStatus oldStatus, 
+                                          ComplaintStatus newStatus) {
+        String statusEmoji = switch (newStatus) {
+            case RESOLVED -> "✅";
+            case IN_PROGRESS -> "🔄";
+            case REJECTED -> "❌";
+            default -> "⏳";
+        };
+        
+        String statusColor = switch (newStatus) {
+            case RESOLVED -> "#16a34a";
+            case IN_PROGRESS -> "#2563eb";
+            case REJECTED -> "#dc2626";
+            default -> "#d97706";
+        };
+        
+        return String.format("""
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: %s; color: white; padding: 20px; text-align: center;">
+                    <h2>%s Your Complaint %s</h2>
+                    <p>Status changed from %s to %s</p>
+                </div>
+                <div style="padding: 20px; background: #f8f9fa;">
+                    <h3>Complaint Details:</h3>
+                    <p><strong>Reference ID:</strong> %s</p>
+                    <p><strong>Type:</strong> %s</p>
+                    <p><strong>Location:</strong> %s</p>
+                    <p><strong>Submitted:</strong> %s</p>
+                </div>
+                <div style="padding: 20px; text-align: center; color: #6c757d;">
+                    <p>SamadhanAI Civic Platform</p>
+                </div>
+            </div>
+            """, 
+            statusColor, statusEmoji, complaint.getReferenceId(), 
+            oldStatus.name(), newStatus.name(),
+            complaint.getReferenceId(), complaint.getComplaintType(),
+            complaint.getFullAddress() != null ? complaint.getFullAddress() : 
+                (complaint.getWard() != null ? complaint.getWard() : "N/A"), 
+            complaint.getCreatedAt());
+    }
+    
+    private String buildReminderEmail(Complaint complaint) {
+        long daysPending = java.time.temporal.ChronoUnit.DAYS.between(
+                complaint.getCreatedAt(), LocalDateTime.now());
+        
+        return String.format("""
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: #dc2626; color: white; padding: 20px; text-align: center;">
+                    <h2>⚠️ ACTION REQUIRED</h2>
+                    <p>Complaint Pending for %d Days</p>
+                </div>
+                <div style="padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7;">
+                    <h3>Reminder Details:</h3>
+                    <p><strong>Reference ID:</strong> %s</p>
+                    <p><strong>Type:</strong> %s</p>
+                    <p><strong>Location:</strong> %s</p>
+                    <p><strong>Days Pending:</strong> %d days</p>
+                    <p><strong>Citizen:</strong> %s</p>
+                    <p><strong>Email:</strong> %s</p>
+                </div>
+                <div style="padding: 20px; text-align: center; color: #6c757d;">
+                    <p>SamadhanAI Civic Platform</p>
+                </div>
+            </div>
+            """, 
+            daysPending, complaint.getReferenceId(), complaint.getComplaintType(),
+            complaint.getFullAddress() != null ? complaint.getFullAddress() : 
+                (complaint.getWard() != null ? complaint.getWard() : "N/A"), 
+            daysPending, complaint.getUserName(),
+            complaint.getUserEmail());
+    }
+
     private String getDepartmentEmail(DepartmentType dept) {
         if (dept == null) return "krishnamittal969145@gmail.com";
         return switch (dept) {
