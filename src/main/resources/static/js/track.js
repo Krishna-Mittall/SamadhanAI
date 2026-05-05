@@ -10,6 +10,9 @@
 
 // ─── STATE ───────────────────────────────────────────────
 let currentComplaint = null;
+const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+));
 
 // ─── INIT ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {

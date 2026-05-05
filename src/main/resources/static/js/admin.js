@@ -13,6 +13,9 @@
 let allUsers      = [];
 let allComplaints = [];
 let currentRefId  = '';
+const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+));
 
 // ─── INIT ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -88,18 +91,22 @@ function renderUsers(list) {
 
     tbody.innerHTML = list.map(u => {
         const initial  = (u.name || '?')[0].toUpperCase();
+        const safeName = esc(u.name || '—');
+        const safeEmail = esc(u.email || '—');
+        const safeRole = esc(u.role || 'USER');
+        const safeUserId = Number(u.id) || 0;
         // ✅ FIXED: u.enabled (not u.active)
         const isActive = u.enabled !== false;
         return `<tr>
-      <td><div style="display:flex;align-items:center;gap:.7rem;"><div class="mini-av">${initial}</div><div style="font-weight:700;">${u.name || '—'}</div></div></td>
-      <td style="color:#64748b;font-size:.82rem;">${u.email}</td>
+      <td><div style="display:flex;align-items:center;gap:.7rem;"><div class="mini-av">${esc(initial)}</div><div style="font-weight:700;">${safeName}</div></div></td>
+      <td style="color:#64748b;font-size:.82rem;">${safeEmail}</td>
       <td style="text-align:center;font-weight:700;">${u.totalComplaints || 0}</td>
       <td style="font-size:.8rem;color:#64748b;">${formatDate(u.createdAt)}</td>
-      <td><span class="s-badge s-${u.role || 'USER'}">${u.role || 'USER'}</span></td>
+      <td><span class="s-badge s-${safeRole}">${safeRole}</span></td>
       <td><span class="s-badge s-${isActive ? 'ACTIVE' : 'DISABLED'}">${isActive ? 'Active' : 'Disabled'}</span></td>
       <td><div style="display:flex;gap:.4rem;flex-wrap:wrap;">
-        <button class="btn btn-${isActive ? 'red-soft' : 'green-soft'} btn-sm" onclick="toggleUser(${u.id}, ${isActive})">${isActive ? 'Disable' : 'Enable'}</button>
-        <button class="btn btn-red-soft btn-sm" onclick="deleteUser(${u.id}, '${(u.name || '').replace(/'/g, '')}')">Delete</button>
+        <button class="btn btn-${isActive ? 'red-soft' : 'green-soft'} btn-sm" onclick="toggleUser(${safeUserId}, ${isActive})">${isActive ? 'Disable' : 'Enable'}</button>
+        <button class="btn btn-red-soft btn-sm" onclick="deleteUser(${safeUserId}, ${JSON.stringify(String(u.name || ''))})">Delete</button>
       </div></td>
     </tr>`;
     }).join('');
@@ -176,6 +183,9 @@ function renderComplaints(list) {
     }
 
     tbody.innerHTML = list.map(c => {
+        const safeRefId = esc(c.referenceId || '');
+        const safeWard = esc(c.ward || '—');
+        const safeUserName = esc(c.userName || 'Anonymous');
         // ✅ NEW: resolvedBy badge
         const resolvedByHtml = c.resolvedBy ? (() => {
             const map = {
@@ -188,17 +198,17 @@ function renderComplaints(list) {
 
         return `
     <tr>
-      <td><span style="font-weight:800;font-size:.85rem;">${c.referenceId}</span></td>
+      <td><span style="font-weight:800;font-size:.85rem;">${safeRefId}</span></td>
       <td style="font-size:.82rem;">${formatType(c.complaintType) || '—'}</td>
       <td style="font-size:.82rem;">${formatType(c.assignedDepartment) || '—'}</td>
-      <td style="font-size:.82rem;color:#64748b;">${c.ward || '—'}</td>
-      <td style="font-size:.8rem;">${c.userName || 'Anonymous'}</td>
+      <td style="font-size:.82rem;color:#64748b;">${safeWard}</td>
+      <td style="font-size:.8rem;">${safeUserName}</td>
       <td style="font-size:.78rem;color:#64748b;">${formatDate(c.createdAt)}</td>
       <td>${statusBadgeHtml(c.status)}</td>
       <td>${resolvedByHtml}</td>
       <td><div style="display:flex;gap:.4rem;flex-wrap:wrap;">
-        <button class="btn btn-orange-soft btn-sm" onclick="openStatusModal('${c.referenceId}', '${c.status}')">Update</button>
-        <a href="track.html?ref=${c.referenceId}" class="btn btn-blue-soft btn-sm" target="_blank">View</a>
+        <button class="btn btn-orange-soft btn-sm" onclick="openStatusModal(${JSON.stringify(String(c.referenceId || ''))}, ${JSON.stringify(String(c.status || ''))})">Update</button>
+        <a href="track.html?ref=${encodeURIComponent(c.referenceId || '')}" class="btn btn-blue-soft btn-sm" target="_blank">View</a>
       </div></td>
     </tr>`;
     }).join('');

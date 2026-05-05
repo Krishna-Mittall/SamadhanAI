@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMyComplaints();
 });
 
+const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+));
+
 // ─── TAB SWITCHING ───────────────────────────────────────
 // ✅ Single definition here — duplicate removed from profile.html
 function switchTab(name, btn) {
@@ -120,6 +124,8 @@ function renderMyComplaints(list) {
     }
 
     el.innerHTML = list.map(c => {
+        const refId = esc(c.referenceId || '');
+        const ward = esc(c.ward || '');
         // resolvedBy badge
         const resolvedByMap = {
             ADMIN:            '🛡️ Admin resolved',
@@ -137,17 +143,17 @@ function renderMyComplaints(list) {
         return `
     <div class="comp-row">
       <div>
-        <div class="comp-ref">${c.referenceId}</div>
+        <div class="comp-ref">${refId}</div>
         <div class="comp-meta">
           ${formatType(c.complaintType) || '—'} &nbsp;·&nbsp;
-          ${c.ward || ''} &nbsp;·&nbsp;
+          ${ward} &nbsp;·&nbsp;
           ${formatDate(c.createdAt)}
         </div>
         ${resolvedByBadge}
       </div>
       <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;">
         ${statusBadgeHtml(c.status)}
-        <a href="track.html?ref=${c.referenceId}" class="btn btn-gray btn-sm">View →</a>
+        <a href="track.html?ref=${encodeURIComponent(c.referenceId || '')}" class="btn btn-gray btn-sm">View →</a>
       </div>
     </div>`;
     }).join('');

@@ -8,6 +8,9 @@
    ======================================================= */
 
 let wardChartInstance = null;
+const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+));
 
 // ─── INIT ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -165,9 +168,10 @@ function renderDepts(depts) {
         const rate = d.totalAssigned ? Math.round((d.resolved / d.totalAssigned) * 100) : 0;
         const grade    = rate >= 80 ? 'A' : rate >= 60 ? 'B' : rate >= 40 ? 'C' : 'D';
         const barColor = rate >= 60 ? '#16a34a' : rate >= 40 ? '#d97706' : '#dc2626';
+        const safeDepartment = esc(formatType(d.departmentName));
 
         return `<tr>
-      <td><strong>${formatType(d.departmentName)}</strong></td>
+      <td><strong>${safeDepartment}</strong></td>
       <td>${d.totalAssigned    || 0}</td>
       <td style="color:#16a34a;font-weight:700;">${d.resolved || 0}</td>
       <td style="color:#f97316;font-weight:700;">${d.pending  || 0}</td>
@@ -211,23 +215,25 @@ function renderIgnored(list) {
     }
 
     el.innerHTML = list.map(c => {
+        const safeRefId = esc(c.referenceId || '');
+        const safeWard = esc(c.ward || '—');
         const days = c.daysIgnored ||
             Math.floor((Date.now() - new Date(c.submittedAt)) / (1000 * 60 * 60 * 24));
         return `
       <div class="ign-item">
         <div class="ign-top">
           <div>
-            <div class="ign-ref">${c.referenceId}</div>
+            <div class="ign-ref">${safeRefId}</div>
             <div class="ign-meta">
               🔖 ${formatType(c.complaintType)} &nbsp;·&nbsp;
               🏛️ ${formatType(c.departmentName)} &nbsp;·&nbsp;
-              🗺️ ${c.ward || '—'}
+              🗺️ ${safeWard}
             </div>
             <div class="ign-warn">⚠️ Auto-reminder sent to department (Feature 8 — every 15 days)</div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;">
             <span class="days-chip">${days} days ignored</span>
-            <a href="track.html?ref=${c.referenceId}" class="btn btn-blue-soft btn-sm">View →</a>
+            <a href="track.html?ref=${encodeURIComponent(c.referenceId || '')}" class="btn btn-blue-soft btn-sm">View →</a>
           </div>
         </div>
       </div>`;
