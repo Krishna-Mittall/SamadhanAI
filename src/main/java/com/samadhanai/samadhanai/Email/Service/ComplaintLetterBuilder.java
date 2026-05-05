@@ -334,13 +334,13 @@ public class ComplaintLetterBuilder {
                 complaint.getState()       != null ? complaint.getState()       : "N/A",
                 complaint.getPincode()     != null ? complaint.getPincode()     : "N/A",
                 dateStr,
-                confidence,
-                photoVerifLine,
-                // ✅ NEW: Coordinates + Google Maps link
+                // Coordinates + Google Maps link
                 complaint.getLatitude()  != null ? complaint.getLatitude().toString()  : "N/A",
                 complaint.getLongitude() != null ? complaint.getLongitude().toString() : "N/A",
                 complaint.getLatitude()  != null ? complaint.getLatitude().toString()  : "0",
                 complaint.getLongitude() != null ? complaint.getLongitude().toString() : "0",
+                confidence,
+                photoVerifLine,
                 complaint.getUserName(),
                 complaint.getUserEmail(),
                 complaint.getUserPhone()   != null ? complaint.getUserPhone()   : "N/A",
