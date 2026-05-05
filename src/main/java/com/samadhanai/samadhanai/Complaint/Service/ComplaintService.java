@@ -326,51 +326,19 @@ public class ComplaintService {
 
     private String savePhoto(MultipartFile file, String subfolder) {
         try {
-            log.debug("Saving photo: {}, uploadDir: {}", file.getOriginalFilename(), uploadDir);
+            log.debug("Saving photo: {}", file.getOriginalFilename());
             
-            // Railway Docker fix: Ensure /tmp/uploads directory exists
+            // 🔥 ALWAYS ensure folder exists - Railway FS fix
             Path baseDir = Paths.get("/tmp/uploads");
-            log.debug("Base directory: {}", baseDir.toAbsolutePath());
-            
-            Path dirPath = subfolder != null ? baseDir.resolve(subfolder) : baseDir;
-            log.debug("Target directory: {}", dirPath.toAbsolutePath());
-
-            if (!Files.exists(dirPath)) {
-                log.info("Creating directory: {}", dirPath.toAbsolutePath());
-                try {
-                    Files.createDirectories(dirPath);
-                    // Set permissions for Railway Docker
-                    dirPath.toFile().setWritable(true, false);
-                } catch (Exception e) {
-                    log.error("Failed to create directory with permissions: {}", e.getMessage(), e);
-                    throw new IOException("Directory creation failed: " + e.getMessage(), e);
-                }
-                
-                // Verify directory was created
-                if (!Files.exists(dirPath)) {
-                    throw new IOException("Failed to create directory: " + dirPath.toAbsolutePath());
-                }
-                log.info("Directory created successfully");
-            }
-            
-            // Check directory is writable
-            if (!Files.isWritable(dirPath)) {
-                log.warn("Directory not writable, attempting to fix permissions");
-                try {
-                    dirPath.toFile().setWritable(true, false);
-                } catch (Exception e) {
-                    throw new IOException("Cannot make directory writable: " + dirPath.toAbsolutePath(), e);
-                }
-            }
+            Files.createDirectories(baseDir);
             
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path target = dirPath.resolve(filename);
+            Path target = baseDir.resolve(filename);
+            
             log.debug("Target file: {}", target.toAbsolutePath());
             
-            // Use InputStream copy instead of transferTo for better error handling
-            try (var inputStream = file.getInputStream()) {
-                Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
-            }
+            // 🔥 REPLACE Files.copy with transferTo (more stable on Railway)
+            file.transferTo(target.toFile());
             
             // Verify file was saved
             if (!Files.exists(target)) {
@@ -381,7 +349,7 @@ public class ComplaintService {
             log.info("Photo saved successfully: {} ({} bytes)", filename, fileSize);
             
             return filename;
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Photo storage failed: {}", e.getMessage(), e);
             throw new AppExceptions.PhotoStorageException("Failed to save photo: " + e.getMessage(), e);
         }
