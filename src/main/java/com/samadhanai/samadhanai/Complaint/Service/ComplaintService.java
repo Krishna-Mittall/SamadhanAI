@@ -304,19 +304,19 @@ public class ComplaintService {
 
     private String savePhoto(MultipartFile file, String subfolder) {
         try {
-//            Path baseDir = Paths.get(uploadDir);
-            Path baseDir = Paths.get("/tmp").resolve("uploads");
+            Path baseDir = Paths.get(uploadDir);
             Path dirPath = subfolder != null ? baseDir.resolve(subfolder) : baseDir;
 
             if (!Files.exists(dirPath)) {
                 Files.createDirectories(dirPath);
             }
-//            Files.createDirectories(dirPath);
+            
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path target = dirPath.resolve(filename);
-//            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
             file.transferTo(target.toFile());
-            return (subfolder != null ? subfolder + "/" : "") + filename;
+            
+            // Return only filename for display, not full path
+            return filename;
         } catch (IOException e) {
             throw new AppExceptions.PhotoStorageException("Failed to save photo", e);
         }

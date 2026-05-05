@@ -517,7 +517,8 @@ public class EmailService {
     // 🔧 Department Helpers
     // ─────────────────────────────────────────────────────────────────
     private String getDepartmentEmail(DepartmentType dept) {
-        if (dept == null) return "mc.indore@mp.gov.in";
+//        if (dept == null) return "mc.indore@mp.gov.in";
+        if (dept == null) return "krishnamittal969145@gmail.com";
         return switch (dept) {
             case PWD                   -> "krishnamittal969145@gmail.com";
             case MUNICIPAL_CORPORATION -> "krishnamittal969145@gmail.com";
