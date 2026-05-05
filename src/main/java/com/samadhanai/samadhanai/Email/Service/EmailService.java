@@ -46,17 +46,26 @@ public class EmailService {
     // ─────────────────────────────────────────────────────────────────
     public EmailStatusDTO sendComplaintToDepartment(Complaint complaint) {
 
-        log.info("Sending complaint email for: {}", complaint.getReferenceId());
+        log.info("🚀 Starting email process for: {}", complaint.getReferenceId());
+        
+        // 🔍 Debug SMTP Configuration
+        log.info("📧 SMTP Config - Host: {}, Port: {}, Username: {}, From: {}", 
+            "smtp.gmail.com", "465", fromEmail, fromEmail);
 
         String deptEmail = getDepartmentEmail(complaint.getAssignedDepartment());
+        log.info("📨 Target Email: {} for Department: {}", deptEmail, complaint.getAssignedDepartment());
 
         try {
+            log.info("📝 Building complaint letter...");
             ComplaintLetterBuilder.LetterResult letter =
                     letterBuilder.buildComplaintLetter(complaint);
+            log.info("✅ Letter built successfully. Subject: {}", letter.getSubject());
 
+            log.info("📬 Creating MIME message...");
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+            log.info("📤 Setting email headers...");
             helper.setFrom(fromEmail, FROM_NAME);
             helper.setTo(deptEmail);
 
@@ -75,17 +84,25 @@ public class EmailService {
             // CC citizen — so they have a copy
             if (complaint.getUserEmail() != null) {
                 helper.setCc(complaint.getUserEmail());
+                log.info("📋 CC set to: {}", complaint.getUserEmail());
             }
 
             helper.setText(letter.getBodyHtml(), true);
+            log.info("📄 Email body set successfully");
 
             // ✅ Attach all photos (main + extra)
+            log.info("📎 Attaching photos...");
             attachAllPhotos(helper, complaint,
                     "complaint_" + complaint.getReferenceId());
+            log.info("✅ Photos attached successfully");
 
+            log.info("🚀 FINAL ATTEMPT - Sending email to: {} for: {}", deptEmail, complaint.getReferenceId());
+            log.info("⏰ Email send attempt started at: {}", LocalDateTime.now());
+            
             mailSender.send(message);
-            log.info("✅ Complaint email sent to: {} for: {}",
-                    deptEmail, complaint.getReferenceId());
+            
+            log.info("🎉 SUCCESS - Email sent to: {} for: {}", deptEmail, complaint.getReferenceId());
+            log.info("⏰ Email send completed at: {}", LocalDateTime.now());
 
             return EmailStatusDTO.builder()
                     .sent(true)
