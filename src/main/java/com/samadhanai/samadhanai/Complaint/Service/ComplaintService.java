@@ -328,7 +328,8 @@ public class ComplaintService {
         try {
             log.debug("Saving photo: {}, uploadDir: {}", file.getOriginalFilename(), uploadDir);
             
-            Path baseDir = Paths.get(uploadDir);
+            // Railway Docker fix: Ensure /tmp/uploads directory exists
+            Path baseDir = Paths.get("/tmp/uploads");
             log.debug("Base directory: {}", baseDir.toAbsolutePath());
             
             Path dirPath = subfolder != null ? baseDir.resolve(subfolder) : baseDir;
@@ -336,7 +337,14 @@ public class ComplaintService {
 
             if (!Files.exists(dirPath)) {
                 log.info("Creating directory: {}", dirPath.toAbsolutePath());
-                Files.createDirectories(dirPath);
+                try {
+                    Files.createDirectories(dirPath);
+                    // Set permissions for Railway Docker
+                    dirPath.toFile().setWritable(true, false);
+                } catch (Exception e) {
+                    log.error("Failed to create directory with permissions: {}", e.getMessage(), e);
+                    throw new IOException("Directory creation failed: " + e.getMessage(), e);
+                }
                 
                 // Verify directory was created
                 if (!Files.exists(dirPath)) {
@@ -347,7 +355,12 @@ public class ComplaintService {
             
             // Check directory is writable
             if (!Files.isWritable(dirPath)) {
-                throw new IOException("Directory is not writable: " + dirPath.toAbsolutePath());
+                log.warn("Directory not writable, attempting to fix permissions");
+                try {
+                    dirPath.toFile().setWritable(true, false);
+                } catch (Exception e) {
+                    throw new IOException("Cannot make directory writable: " + dirPath.toAbsolutePath(), e);
+                }
             }
             
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();

@@ -232,12 +232,16 @@ async function analyzePhoto(file, idx) {
                 }
             }
         } else {
-            selectedFiles[idx].status = 'rejected';
-            selectedFiles[idx].reason = 'Could not analyze photo. Please try again.';
+            if (selectedFiles[idx]) {
+                selectedFiles[idx].status = 'rejected';
+                selectedFiles[idx].reason = 'Could not analyze photo. Please try again.';
+            }
         }
     } catch (err) {
-        selectedFiles[idx].status = 'rejected';
-        selectedFiles[idx].reason = 'Analysis failed. Please check your connection.';
+        if (selectedFiles[idx]) {
+            selectedFiles[idx].status = 'rejected';
+            selectedFiles[idx].reason = 'Analysis failed. Please check your connection.';
+        }
     }
 
     renderPhotoCard(idx);
