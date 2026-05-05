@@ -52,15 +52,7 @@ public class EmailService {
 
 
 
-    private final JavaMailSender         mailSender;
-
-    private final ComplaintLetterBuilder letterBuilder;
-
-
-
-    @Value("${spring.mail.username}")
-
-    private String fromEmail;
+    private final SendGridEmailService sendGridEmailService;
 
 
 
@@ -82,192 +74,14 @@ public class EmailService {
 
     // 📧 Feature 3: Send Complaint Email to Department
 
-    // ✅ UPDATED: Reply-To header added — department ka reply
-
-    //             seedha hamare Gmail inbox mein aayega
-
-    //             EmailReplyListenerService IMAP se read karega
+    // ✅ UPDATED: Using SendGrid HTTP API for Railway compatibility
 
     // ─────────────────────────────────────────────────────────────────
 
     public EmailStatusDTO sendComplaintToDepartment(Complaint complaint) {
-
-
-
-        log.info("🚀 Starting email process for: {}", complaint.getReferenceId());
-
-
-
-        // 🔍 Debug SMTP Configuration
-        log.info("📧 SMTP Config - Host: {}, Port: {}, Username: {}, From: {}", 
-            "smtp-relay.brevo.com", "587", fromEmail, fromEmail);
-
-
-        String deptEmail = getDepartmentEmail(complaint.getAssignedDepartment());
-
-        log.info("📨 Target Email: {} for Department: {}", deptEmail, complaint.getAssignedDepartment());
-
-
-
-        try {
-
-            log.info("📝 Building complaint letter...");
-
-            ComplaintLetterBuilder.LetterResult letter =
-
-                    letterBuilder.buildComplaintLetter(complaint);
-
-            log.info("✅ Letter built successfully. Subject: {}", letter.getSubject());
-
-
-
-            log.info("📬 Creating MIME message...");
-
-            MimeMessage message = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-
-
-            log.info("📤 Setting email headers...");
-
-            helper.setFrom(fromEmail, FROM_NAME);
-
-            helper.setTo(deptEmail);
-
-
-
-            // ✅ KEY CHANGE: Reply-To set karo — same as our Gmail inbox
-
-            // Jab department "Reply" kare → mail aayegi is address pe
-
-            // EmailReplyListenerService IMAP se yahi inbox check karta hai
-
-            message.setReplyTo(new InternetAddress[]{
-
-                    new InternetAddress(fromEmail, FROM_NAME)
-
-            });
-
-
-
-            // ✅ Subject mein Reference ID clearly likho
-
-            // EmailReplyListenerService regex se SAI-XXXXXXXX extract karega
-
-            // Department ke reply subject mein bhi ye ID rehti hai ("Re: ...")
-
-            helper.setSubject(letter.getSubject());
-
-
-
-            // CC citizen — so they have a copy
-
-            if (complaint.getUserEmail() != null) {
-
-                helper.setCc(complaint.getUserEmail());
-
-                log.info("📋 CC set to: {}", complaint.getUserEmail());
-
-            }
-
-
-
-            helper.setText(letter.getBodyHtml(), true);
-
-            log.info("📄 Email body set successfully");
-
-
-
-            // ✅ Attach all photos (main + extra)
-
-            log.info("📎 Attaching photos...");
-
-            attachAllPhotos(helper, complaint,
-
-                    "complaint_" + complaint.getReferenceId());
-
-            log.info("✅ Photos attached successfully");
-
-
-
-            log.info("🚀 FINAL ATTEMPT - Sending email to: {} for: {}", deptEmail, complaint.getReferenceId());
-
-            log.info("⏰ Email send attempt started at: {}", LocalDateTime.now());
-
-            
-
-            mailSender.send(message);
-
-            
-
-            log.info("🎉 SUCCESS - Email sent to: {} for: {}", deptEmail, complaint.getReferenceId());
-
-            log.info("⏰ Email send completed at: {}", LocalDateTime.now());
-
-
-
-            return EmailStatusDTO.builder()
-
-                    .sent(true)
-
-                    .sentTo(deptEmail)
-
-                    .ccTo(complaint.getUserEmail())
-
-                    .sentAt(LocalDateTime.now())
-
-                    .subject(letter.getSubject())
-
-                    .complaintReferenceId(complaint.getReferenceId())
-
-                    .build();
-
-
-
-        } catch (MessagingException e) {
-
-            log.error("❌ Email failed for {}: {} | Full Error: {}",
-
-                    complaint.getReferenceId(), e.getMessage(), e.toString());
-
-            e.printStackTrace();
-
-            return EmailStatusDTO.builder()
-
-                    .sent(false)
-
-                    .sentTo(deptEmail)
-
-                    .failureReason("Email delivery failed: " + e.getMessage())
-
-                    .complaintReferenceId(complaint.getReferenceId())
-
-                    .build();
-
-
-
-        } catch (Exception e) {
-
-            log.error("❌ Unexpected error sending email: {}", e.getMessage());
-
-            return EmailStatusDTO.builder()
-
-                    .sent(false)
-
-                    .sentTo(deptEmail)
-
-                    .failureReason("Unexpected error: " + e.getMessage())
-
-                    .complaintReferenceId(complaint.getReferenceId())
-
-                    .build();
-
-        }
-
+        log.info("🚀 Delegating email sending to SendGrid for: {}", complaint.getReferenceId());
+        return sendGridEmailService.sendComplaintToDepartment(complaint);
     }
-
-
 
     // ─────────────────────────────────────────────────────────────────
 
