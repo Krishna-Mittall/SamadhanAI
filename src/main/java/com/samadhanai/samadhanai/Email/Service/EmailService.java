@@ -509,9 +509,8 @@ public class EmailService {
                 }
             }
         }
-
         log.info("Total {} photo(s) attached", photoNum - 1);
-    }
+}
 
     // ─────────────────────────────────────────────────────────────────
     // 🔧 Department Helpers

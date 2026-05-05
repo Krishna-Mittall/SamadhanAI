@@ -326,21 +326,51 @@ public class ComplaintService {
 
     private String savePhoto(MultipartFile file, String subfolder) {
         try {
+            log.debug("Saving photo: {}, uploadDir: {}", file.getOriginalFilename(), uploadDir);
+            
             Path baseDir = Paths.get(uploadDir);
+            log.debug("Base directory: {}", baseDir.toAbsolutePath());
+            
             Path dirPath = subfolder != null ? baseDir.resolve(subfolder) : baseDir;
+            log.debug("Target directory: {}", dirPath.toAbsolutePath());
 
             if (!Files.exists(dirPath)) {
+                log.info("Creating directory: {}", dirPath.toAbsolutePath());
                 Files.createDirectories(dirPath);
+                
+                // Verify directory was created
+                if (!Files.exists(dirPath)) {
+                    throw new IOException("Failed to create directory: " + dirPath.toAbsolutePath());
+                }
+                log.info("Directory created successfully");
+            }
+            
+            // Check directory is writable
+            if (!Files.isWritable(dirPath)) {
+                throw new IOException("Directory is not writable: " + dirPath.toAbsolutePath());
             }
             
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path target = dirPath.resolve(filename);
-            file.transferTo(target.toFile());
+            log.debug("Target file: {}", target.toAbsolutePath());
             
-            // Return only filename for display, not full path
+            // Use InputStream copy instead of transferTo for better error handling
+            try (var inputStream = file.getInputStream()) {
+                Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+            
+            // Verify file was saved
+            if (!Files.exists(target)) {
+                throw new IOException("File was not saved: " + target.toAbsolutePath());
+            }
+            
+            long fileSize = Files.size(target);
+            log.info("Photo saved successfully: {} ({} bytes)", filename, fileSize);
+            
             return filename;
         } catch (IOException e) {
-            throw new AppExceptions.PhotoStorageException("Failed to save photo", e);
+            log.error("Photo storage failed: {}", e.getMessage(), e);
+            throw new AppExceptions.PhotoStorageException("Failed to save photo: " + e.getMessage(), e);
         }
     }
 
