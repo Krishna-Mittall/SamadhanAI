@@ -498,7 +498,8 @@ public class EmailService {
 
         // Main photo
         if (complaint.getPhotoPath() != null) {
-            File f = Paths.get(uploadDir, complaint.getPhotoPath()).toFile();
+            // 🔥 FIX: Use same hardcoded path as ComplaintService
+            File f = Paths.get("/tmp/uploads", complaint.getPhotoPath()).toFile();
             if (f.exists()) {
                 helper.addAttachment(
                         prefix + "_photo_" + photoNum + ".jpg",
@@ -515,7 +516,8 @@ public class EmailService {
                 && !complaint.getExtraPhotoPaths().isBlank()) {
             for (String path : complaint.getExtraPhotoPaths().split(",")) {
                 if (path.isBlank()) continue;
-                File f = Paths.get(uploadDir, path.trim()).toFile();
+                // 🔥 FIX: Use same hardcoded path as ComplaintService
+                File f = Paths.get("/tmp/uploads", path.trim()).toFile();
                 if (f.exists()) {
                     helper.addAttachment(
                             prefix + "_photo_" + photoNum + ".jpg",
