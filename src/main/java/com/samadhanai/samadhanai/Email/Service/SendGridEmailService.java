@@ -40,6 +40,9 @@ public class SendGridEmailService {
     @Value("${sendgrid.from.name}")
     private String fromName;
 
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
     public EmailStatusDTO sendComplaintToDepartment(Complaint complaint) {
         log.info("🚀 Starting SendGrid email process for: {}", complaint.getReferenceId());
 
@@ -66,7 +69,7 @@ public class SendGridEmailService {
             // Add attachments
             // Main photo
             if (complaint.getPhotoPath() != null) {
-                addAttachment(mail, "/tmp/uploads/" + complaint.getPhotoPath(), 
+                addAttachment(mail, uploadDir + complaint.getPhotoPath(), 
                     "complaint_" + complaint.getReferenceId() + "_photo_1.jpg");
                 log.info("✅ Attached photo: {}", complaint.getPhotoPath());
             }
@@ -76,7 +79,7 @@ public class SendGridEmailService {
                 int photoNum = 2;
                 for (String path : complaint.getExtraPhotoPaths().split(",")) {
                     if (path.isBlank()) continue;
-                    addAttachment(mail, "/tmp/uploads/" + path.trim(), 
+                    addAttachment(mail, uploadDir + path.trim(), 
                         "complaint_" + complaint.getReferenceId() + "_photo_" + photoNum + ".jpg");
                     log.info("✅ Attached extra photo: {}", path.trim());
                     photoNum++;
