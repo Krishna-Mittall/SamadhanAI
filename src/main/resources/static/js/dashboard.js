@@ -34,7 +34,6 @@ function renderStats(s) {
     setText('s-prog',  s.inProgressComplaints   ?? '0');
     setText('s-pend',  s.pendingComplaints      ?? '0');
     setText('s-ign',   s.ignoredComplaints      ?? '0');
-    setText('s-fake',  s.fakeRejectedComplaints  ?? '0');
 
     setText('hl-ward', s.mostComplainedWard || '—');
     setText('hl-worst', s.worstPerformingDepartment || '—');

@@ -21,9 +21,7 @@ public class DashboardDTOs {
         private long   inProgressComplaints;
         private long   resolvedComplaints;
         private long   ignoredComplaints;
-        private long   fakeRejectedComplaints;
         private double resolutionRatePercent;
-        private double fakeRejectionRatePercent;
         private String mostComplainedWard;
         private String worstPerformingDepartment;
         private String mostCommonComplaintType;

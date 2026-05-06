@@ -36,16 +36,12 @@ public class DashboardService {
         long pending    = complaintRepository.countByStatus(ComplaintStatus.PENDING);
         long inProgress = complaintRepository.countByStatus(ComplaintStatus.IN_PROGRESS);
         long resolved   = complaintRepository.countByStatus(ComplaintStatus.RESOLVED);
-        long rejected   = complaintRepository.countByStatus(ComplaintStatus.REJECTED);
-
         // ✅ FIX: findIgnoredComplaints() not countIgnoredComplaintsSince()
         LocalDateTime cutoff = LocalDateTime.now().minusDays(IGNORED_DAYS_THRESHOLD);
         long ignored = complaintRepository.findIgnoredComplaints(cutoff).size();
 
         double resolutionRate = total > 0
                 ? Math.round((resolved * 100.0 / total) * 10.0) / 10.0 : 0.0;
-        double fakeRate = total > 0
-                ? Math.round((rejected * 100.0 / total) * 10.0) / 10.0 : 0.0;
 
         return OverallStatsDTO.builder()
                 .totalComplaints(total)
@@ -53,9 +49,7 @@ public class DashboardService {
                 .inProgressComplaints(inProgress)
                 .resolvedComplaints(resolved)
                 .ignoredComplaints(ignored)
-                .fakeRejectedComplaints(rejected)
                 .resolutionRatePercent(resolutionRate)
-                .fakeRejectionRatePercent(fakeRate)
                 .mostComplainedWard(getMostComplainedWard())
                 .worstPerformingDepartment(getWorstPerformingDepartment())
                 .mostCommonComplaintType(getMostCommonComplaintType())
