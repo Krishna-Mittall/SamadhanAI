@@ -331,7 +331,9 @@ public class SendGridEmailService {
     }
 
     private String getDepartmentEmail(DepartmentType dept) {
+
         if (dept == null) return "krishnamittal969145@gmail.com";
+
         return switch (dept) {
             case PWD -> "krishnamittal969145@gmail.com";
             case MUNICIPAL_CORPORATION -> "krishnamittal969145@gmail.com";
@@ -339,5 +341,15 @@ public class SendGridEmailService {
             case WATER_SUPPLY -> "krishnamittal969145@gmail.com";
             case SANITATION -> "krishnamittal969145@gmail.com";
         };
+
+//        if (dept == null) return "mc.indore@mp.gov.in";
+//        return switch (dept) {
+//            case PWD -> "pwd.indore@mp.gov.in";
+//            case MUNICIPAL_CORPORATION -> "mc.indore@mp.gov.in";
+//            case ELECTRICITY_BOARD -> "mpcz.indore@mp.gov.in";
+//            case WATER_SUPPLY -> "phed.indore@mp.gov.in";
+//            case SANITATION -> "sanitation.indore@mp.gov.in";
+//        };
+
     }
 }
