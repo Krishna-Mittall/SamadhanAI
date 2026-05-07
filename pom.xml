@@ -151,6 +151,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Cloudinary for photo storage -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http5</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
     </dependencies>
 
 

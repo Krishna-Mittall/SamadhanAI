@@ -2,6 +2,7 @@ package com.samadhanai.samadhanai.Complaint.Service;
 
 import com.samadhanai.samadhanai.Ai.FakePhotoDetectionService;
 import com.samadhanai.samadhanai.Ai.PhotoAnalysisService;
+import com.samadhanai.samadhanai.Config.CloudinaryService;
 import com.samadhanai.samadhanai.Common.Enums.ComplaintStatus;
 import com.samadhanai.samadhanai.Common.Enums.ResolutionSource;
 import com.samadhanai.samadhanai.Complaint.Dto.ComplaintDTOs;
@@ -34,6 +35,7 @@ public class ComplaintService {
     private final FakePhotoDetectionService fakePhotoDetectionService;
     private final LocationService           locationService;
     private final EmailService              emailService;
+    private final CloudinaryService         cloudinaryService;
 
     @Value("${app.upload.dir}")
     private String uploadDir;
@@ -328,27 +330,11 @@ public class ComplaintService {
         try {
             log.debug("Saving photo: {}", file.getOriginalFilename());
             
-            // 🔥 ALWAYS ensure folder exists - Railway FS fix
-            Path baseDir = Paths.get("/tmp/uploads");
-            Files.createDirectories(baseDir);
+            // Use Cloudinary for persistent cloud storage
+            String url = cloudinaryService.uploadPhoto(file);
+            log.info("Photo saved to Cloudinary: {}", url);
             
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path target = baseDir.resolve(filename);
-            
-            log.debug("Target file: {}", target.toAbsolutePath());
-            
-            // 🔥 REPLACE Files.copy with transferTo (more stable on Railway)
-            file.transferTo(target.toFile());
-            
-            // Verify file was saved
-            if (!Files.exists(target)) {
-                throw new IOException("File was not saved: " + target.toAbsolutePath());
-            }
-            
-            long fileSize = Files.size(target);
-            log.info("Photo saved successfully: {} ({} bytes)", filename, fileSize);
-            
-            return filename;
+            return url;
         } catch (Exception e) {
             log.error("Photo storage failed: {}", e.getMessage(), e);
             throw new AppExceptions.PhotoStorageException("Failed to save photo: " + e.getMessage(), e);

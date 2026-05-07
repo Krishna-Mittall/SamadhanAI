@@ -34,6 +34,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // ✅ Cloudinary is now primary storage for new photos
+        // Keeping this for backward compatibility with legacy file uploads
         String location = uploadDir.replace("\\", "/");
         if (!location.endsWith("/")) {
             location = location + "/";

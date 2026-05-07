@@ -84,9 +84,11 @@ function renderComplaint(c) {
 
     const img = document.getElementById('comp-img');
     if (img && c.photoPath) {
-        img.src = '/uploads/' + c.photoPath;
+        // ✅ Handle both Cloudinary full URLs and legacy paths
+        const isFullUrl = c.photoPath.startsWith('http://') || c.photoPath.startsWith('https://');
+        img.src = isFullUrl ? c.photoPath : '/uploads/' + c.photoPath;
         img.style.display = 'block';
-        img.onclick = () => window.open('/uploads/' + c.photoPath, '_blank');
+        img.onclick = () => window.open(isFullUrl ? c.photoPath : '/uploads/' + c.photoPath, '_blank');
     }
 
     if (c.resolutionNote) {
