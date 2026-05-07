@@ -17,8 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -67,19 +70,19 @@ public class SendGridEmailService {
             }
 
             // Add attachments
-            // Main photo
+            // Main photo (Cloudinary URL or legacy path)
             if (complaint.getPhotoPath() != null) {
-                addAttachment(mail, uploadDir + complaint.getPhotoPath(), 
+                addAttachment(mail, complaint.getPhotoPath(), 
                     "complaint_" + complaint.getReferenceId() + "_photo_1.jpg");
                 log.info("✅ Attached photo: {}", complaint.getPhotoPath());
             }
 
-            // Extra photos
+            // Extra photos (Cloudinary URLs or legacy paths)
             if (complaint.getExtraPhotoPaths() != null && !complaint.getExtraPhotoPaths().isBlank()) {
                 int photoNum = 2;
                 for (String path : complaint.getExtraPhotoPaths().split(",")) {
                     if (path.isBlank()) continue;
-                    addAttachment(mail, uploadDir + path.trim(), 
+                    addAttachment(mail, path.trim(), 
                         "complaint_" + complaint.getReferenceId() + "_photo_" + photoNum + ".jpg");
                     log.info("✅ Attached extra photo: {}", path.trim());
                     photoNum++;
@@ -132,20 +135,40 @@ public class SendGridEmailService {
     }
 
     private void addAttachment(Mail mail, String filePath, String filename) throws IOException {
-        File file = new File(filePath);
-        if (file.exists()) {
-            byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
-            String encoded = Base64.getEncoder().encodeToString(fileContent);
-            
+        byte[] fileContent = null;
+        
+        // Check if it's a URL (Cloudinary) or local file path
+        if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+            // Download from Cloudinary URL
+            log.info("📥 Downloading photo from URL: {}", filePath);
+            try (InputStream is = new URL(filePath).openStream()) {
+                fileContent = is.readAllBytes();
+                log.info("✅ Downloaded {} bytes from URL", fileContent.length);
+            } catch (Exception e) {
+                log.error("❌ Failed to download from URL: {}", filePath, e);
+                return;
+            }
+        } else {
+            // Local file path (legacy photos)
+            File file = new File(uploadDir + filePath);
+            if (file.exists()) {
+                fileContent = Files.readAllBytes(Paths.get(uploadDir + filePath));
+                log.info("✅ Read {} bytes from local file", fileContent.length);
+            } else {
+                log.warn("⚠️ Attachment not found: {}", filePath);
+                return;
+            }
+        }
+        
+        if (fileContent != null && fileContent.length > 0) {
             Attachments attachment = new Attachments();
-            attachment.setContent(encoded);
+            attachment.setContent(Base64.getEncoder().encodeToString(fileContent));
             attachment.setType("image/jpeg");
             attachment.setFilename(filename);
             attachment.setDisposition("attachment");
             
             mail.addAttachments(attachment);
-        } else {
-            log.warn("⚠️ Attachment not found: {}", filePath);
+            log.info("✅ Attached: {} ({} bytes)", filename, fileContent.length);
         }
     }
 
@@ -212,9 +235,9 @@ public class SendGridEmailService {
                 mail.personalization.get(0).addCc(new Email(complaint.getUserEmail()));
             }
             
-            // Add attachments
+            // Add attachments (Cloudinary URL or legacy path)
             if (complaint.getPhotoPath() != null) {
-                addAttachment(mail, uploadDir + complaint.getPhotoPath(), 
+                addAttachment(mail, complaint.getPhotoPath(), 
                     "reminder_" + complaint.getReferenceId() + "_photo_1.jpg");
             }
             
