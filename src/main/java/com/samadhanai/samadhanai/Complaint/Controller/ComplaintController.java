@@ -160,6 +160,15 @@ public class ComplaintController {
         ComplaintDTOs.Response result = complaintService.sendToDepartment(
                 referenceId, currentUser.getId());
 
+        if (!Boolean.TRUE.equals(result.getEmailSent())) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_GATEWAY).body(ApiResponse.builder()
+                    .success(false)
+                    .message("Email could not be sent. Please try again later.")
+                    .data(result)
+                    .timestamp(LocalDateTime.now())
+                    .build());
+        }
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true).message("Complaint sent to department successfully!")
                 .data(result).timestamp(LocalDateTime.now()).build());

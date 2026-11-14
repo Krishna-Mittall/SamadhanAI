@@ -74,7 +74,7 @@ public class EmailService {
 
 
 
-    private final GmailEmailService gmailEmailService;
+    private final BrevoEmailService brevoEmailService;
 
 
 
@@ -112,7 +112,7 @@ public class EmailService {
 
 
 
-    // ✅ UPDATED: Using SendGrid HTTP API for Railway compatibility
+    // Uses Brevo's HTTPS API so sending works on Render Free.
 
 
 
@@ -122,9 +122,9 @@ public class EmailService {
 
     public EmailStatusDTO sendComplaintToDepartment(Complaint complaint) {
 
-        log.info("Delegating email sending to Gmail SMTP for: {}", complaint.getReferenceId());
+        log.info("Delegating email sending to Brevo for: {}", complaint.getReferenceId());
 
-        return gmailEmailService.sendComplaintToDepartment(complaint);
+        return brevoEmailService.sendComplaintToDepartment(complaint);
 
     }
 
@@ -138,7 +138,7 @@ public class EmailService {
 
 
 
-    // ✅ NO CHANGE NEEDED — already works correctly
+    // Sent through the same Brevo transactional-email service.
 
 
 
@@ -160,7 +160,7 @@ public class EmailService {
 
         
 
-        gmailEmailService.sendStatusUpdateToCitizen(complaint, oldStatus, newStatus);
+        brevoEmailService.sendStatusUpdateToCitizen(complaint, oldStatus, newStatus);
 
 
 
@@ -176,15 +176,7 @@ public class EmailService {
 
 
 
-    // ✅ UPDATED: Reply-To header added here too
-
-
-
-    //             Agar department reminder pe reply kare →
-
-
-
-    //             woh bhi EmailReplyListenerService catch kar lega
+    // Uses the same Brevo service; replies are read by EmailReplyListenerService.
 
 
 
@@ -200,7 +192,7 @@ public class EmailService {
 
         
 
-        return gmailEmailService.sendReminderToDepartment(complaint);
+        return brevoEmailService.sendReminderToDepartment(complaint);
 
     }
 
