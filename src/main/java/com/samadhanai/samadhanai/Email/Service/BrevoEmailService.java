@@ -1,7 +1,7 @@
 package com.samadhanai.samadhanai.Email.Service;
 
 import com.samadhanai.samadhanai.Common.Enums.ComplaintStatus;
-import com.samadhanai.samadhanai.Common.Enums.DepartmentType;
+import com.samadhanai.samadhanai.Common.DepartmentEmailDirectory;
 import com.samadhanai.samadhanai.Complaint.Model.Complaint;
 import com.samadhanai.samadhanai.Email.Dto.EmailStatusDTO;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class BrevoEmailService {
     private String uploadDir;
 
     public EmailStatusDTO sendComplaintToDepartment(Complaint complaint) {
-        String departmentEmail = getDepartmentEmail(complaint.getAssignedDepartment());
+        String departmentEmail = DepartmentEmailDirectory.forDepartment(complaint.getAssignedDepartment());
         log.info("Starting Brevo email for complaint {} to {}", complaint.getReferenceId(), departmentEmail);
         try {
             ComplaintLetterBuilder.LetterResult letter = letterBuilder.buildComplaintLetter(complaint);
@@ -85,7 +85,7 @@ public class BrevoEmailService {
     }
 
     public EmailStatusDTO sendReminderToDepartment(Complaint complaint) {
-        String departmentEmail = getDepartmentEmail(complaint.getAssignedDepartment());
+        String departmentEmail = DepartmentEmailDirectory.forDepartment(complaint.getAssignedDepartment());
         String subject = "REMINDER: Complaint pending — " + complaint.getReferenceId();
         String body = "<p>This is a reminder for civic complaint <strong>" + complaint.getReferenceId()
                 + "</strong>.</p><p>Please review and take appropriate action.</p>";
@@ -166,8 +166,4 @@ public class BrevoEmailService {
                 .complaintReferenceId(complaint.getReferenceId()).build();
     }
 
-    private String getDepartmentEmail(DepartmentType department) {
-        // Demo receiver: replace with verified government-department addresses before production use.
-        return "krishnamittal969145@gmail.com";
-    }
 }

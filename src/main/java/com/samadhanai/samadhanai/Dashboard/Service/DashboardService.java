@@ -2,6 +2,7 @@ package com.samadhanai.samadhanai.Dashboard.Service;
 
 import com.samadhanai.samadhanai.Common.Enums.ComplaintStatus;
 import com.samadhanai.samadhanai.Common.Enums.DepartmentType;
+import com.samadhanai.samadhanai.Common.DepartmentEmailDirectory;
 import com.samadhanai.samadhanai.Complaint.Model.Complaint;
 import com.samadhanai.samadhanai.Complaint.Repository.ComplaintRepository;
 import com.samadhanai.samadhanai.Dashboard.Dto.DashboardDTOs.DepartmentScoreDTO;
@@ -296,13 +297,6 @@ public class DashboardService {
     }
 
     private String getDepartmentEmail(DepartmentType dept) {
-        if (dept == null) return "civic@municipal.gov.in";
-        return switch (dept) {
-            case PWD                   -> "pwd.indore@mp.gov.in";
-            case MUNICIPAL_CORPORATION -> "mc.indore@mp.gov.in";
-            case ELECTRICITY_BOARD     -> "mpcz.indore@mp.gov.in";
-            case WATER_SUPPLY          -> "phed.indore@mp.gov.in";
-            case SANITATION            -> "sanitation.indore@mp.gov.in";
-        };
+        return DepartmentEmailDirectory.forDepartment(dept);
     }
 }

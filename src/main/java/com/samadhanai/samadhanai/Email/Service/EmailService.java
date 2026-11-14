@@ -7,6 +7,7 @@ package com.samadhanai.samadhanai.Email.Service;
 
 
 import com.samadhanai.samadhanai.Common.Enums.ComplaintStatus;
+import com.samadhanai.samadhanai.Common.DepartmentEmailDirectory;
 
 
 
@@ -233,38 +234,7 @@ public class EmailService {
 
 
     private String getDepartmentEmail(DepartmentType dept) {
-
-
-
-        if (dept == null) return "mc.indore@mp.gov.in";
-
-
-
-            return switch (dept) {
-
-
-
-                case PWD                   -> "pwd.indore@mp.gov.in";
-
-
-
-                case MUNICIPAL_CORPORATION -> "mc.indore@mp.gov.in";
-
-
-
-                case ELECTRICITY_BOARD     -> "mpcz.indore@mp.gov.in";
-
-
-
-                case WATER_SUPPLY          -> "phed.indore@mp.gov.in";
-
-
-
-                case SANITATION            -> "sanitation.indore@mp.gov.in";
-
-
-
-            };
+        return DepartmentEmailDirectory.forDepartment(dept);
 
 
 
