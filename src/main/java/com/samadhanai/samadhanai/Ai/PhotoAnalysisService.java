@@ -24,8 +24,10 @@ public class PhotoAnalysisService {
     @Value("${spring.ai.openai.api-key}")
     private String groqApiKey;
 
+    @Value("${app.groq.vision.model:qwen/qwen3.8-27b}")
+    private String groqVisionModel;
+
     private static final String GROQ_URL   = "https://api.groq.com/openai/v1/chat/completions";
-    private static final String GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient   httpClient   = HttpClient.newHttpClient();
@@ -80,7 +82,7 @@ public class PhotoAnalysisService {
 
             // ✅ Groq vision API format — content is array (text + image_url)
             Map<String, Object> requestBody = Map.of(
-                    "model", GROQ_MODEL,
+                    "model", groqVisionModel,
                     "max_tokens", 500,
                     "messages", List.of(
                             Map.of(

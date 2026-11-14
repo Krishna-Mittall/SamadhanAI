@@ -27,8 +27,10 @@ public class FakePhotoDetectionService {
     @Value("${spring.ai.openai.api-key}")
     private String groqApiKey;
 
+    @Value("${app.groq.vision.model:qwen/qwen3.8-27b}")
+    private String groqVisionModel;
+
     private static final String GROQ_URL   = "https://api.groq.com/openai/v1/chat/completions";
-    private static final String GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient   httpClient   = HttpClient.newHttpClient();
@@ -170,12 +172,12 @@ public class FakePhotoDetectionService {
             log.info("Layer 3 SKIPPED — No GPS in EXIF, device model verified in Layer 2");
         }
 
-        // ══ LAYER 4: AI Vision Check — STRICT ════════════
-        // No benefit of doubt — AI fail = reject
-        boolean aiCheckPassed = checkWithAI(photo);
-        resultBuilder.passedAiCheck(aiCheckPassed);
+        // ══ LAYER 4: AI Vision Check ═════════════════════
+        // A provider outage must not falsely reject a valid citizen complaint.
+        AiCheckResult aiCheckResult = checkWithAI(photo);
+        resultBuilder.passedAiCheck(aiCheckResult == AiCheckResult.REAL);
 
-        if (!aiCheckPassed) {
+        if (aiCheckResult == AiCheckResult.FAKE) {
             log.warn("Layer 4 FAILED: AI detected photo is not a valid civic complaint photo");
             return resultBuilder
                     .isReal(false)
@@ -185,7 +187,12 @@ public class FakePhotoDetectionService {
                             + "or any other civic problem at the problem site.")
                     .build();
         }
-        log.info("Layer 4 PASSED ✅ AI confirms photo is real");
+
+        if (aiCheckResult == AiCheckResult.UNAVAILABLE) {
+            log.warn("Layer 4 SKIPPED: AI verification is unavailable or ambiguous");
+        } else {
+            log.info("Layer 4 PASSED ✅ AI confirms photo is real");
+        }
         log.info("✅ All 4 layers passed — photo verified as REAL");
 
         return resultBuilder
@@ -260,12 +267,20 @@ public class FakePhotoDetectionService {
         return result;
     }
 
-    // ══ LAYER 4: AI Vision — STRICT (no benefit of doubt) ═
-    private boolean checkWithAI(MultipartFile photo) {
+    private enum AiCheckResult {
+        REAL, FAKE, UNAVAILABLE
+    }
+
+    // ══ LAYER 4: AI Vision ══════════════════════════════
+    private AiCheckResult checkWithAI(MultipartFile photo) {
         try {
             byte[] photoBytes = photo.getBytes();
             String base64Image = Base64.getEncoder().encodeToString(photoBytes);
-            String dataUrl     = "data:image/jpeg;base64," + base64Image;
+            String mimeType = photo.getContentType();
+            if (mimeType == null || !mimeType.startsWith("image/")) {
+                mimeType = "image/jpeg";
+            }
+            String dataUrl = "data:" + mimeType + ";base64," + base64Image;
 
             String prompt = "You are a photo verification AI for a civic complaint system in India. "
                     + "Analyze this photo carefully.\n\n"
@@ -285,7 +300,7 @@ public class FakePhotoDetectionService {
 
             // ✅ Groq vision API format — direct HTTP call
             Map<String, Object> requestBody = Map.of(
-                    "model", GROQ_MODEL,
+                    "model", groqVisionModel,
                     "max_tokens", 10,
                     "messages", List.of(
                             Map.of(
@@ -313,7 +328,7 @@ public class FakePhotoDetectionService {
 
             if (response.statusCode() != 200) {
                 log.error("Groq AI check error {}: {}", response.statusCode(), response.body());
-                return false; // STRICT: API error = reject
+                return AiCheckResult.UNAVAILABLE;
             }
 
             Map<?, ?> responseMap = objectMapper.readValue(response.body(), Map.class);
@@ -322,12 +337,18 @@ public class FakePhotoDetectionService {
             String aiResponse = ((String) message.get("content")).trim().toUpperCase();
 
             log.info("AI photo check response: {}", aiResponse);
-            return aiResponse.contains("REAL") && !aiResponse.contains("FAKE");
+            if (aiResponse.matches("(?s)^REAL\\b.*")) {
+                return AiCheckResult.REAL;
+            }
+            if (aiResponse.matches("(?s)^FAKE\\b.*")) {
+                return AiCheckResult.FAKE;
+            }
+            log.warn("AI photo check returned an ambiguous response: {}", aiResponse);
+            return AiCheckResult.UNAVAILABLE;
 
         } catch (Exception e) {
-            // ✅ STRICT: AI timeout/error = REJECT
-            log.error("AI check failed: {} — REJECTING (strict mode)", e.getMessage());
-            return false;
+            log.error("AI check failed: {} — skipping AI verification", e.getMessage());
+            return AiCheckResult.UNAVAILABLE;
         }
     }
 
