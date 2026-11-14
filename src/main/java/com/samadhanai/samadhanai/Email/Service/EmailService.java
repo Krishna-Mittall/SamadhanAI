@@ -74,7 +74,7 @@ public class EmailService {
 
 
 
-    private final SendGridEmailService sendGridEmailService;
+    private final GmailEmailService gmailEmailService;
 
 
 
@@ -122,9 +122,9 @@ public class EmailService {
 
     public EmailStatusDTO sendComplaintToDepartment(Complaint complaint) {
 
-        log.info("🚀 Delegating email sending to SendGrid for: {}", complaint.getReferenceId());
+        log.info("Delegating email sending to Gmail SMTP for: {}", complaint.getReferenceId());
 
-        return sendGridEmailService.sendComplaintToDepartment(complaint);
+        return gmailEmailService.sendComplaintToDepartment(complaint);
 
     }
 
@@ -160,7 +160,7 @@ public class EmailService {
 
         
 
-        sendGridEmailService.sendStatusUpdateToCitizen(complaint, oldStatus, newStatus);
+        gmailEmailService.sendStatusUpdateToCitizen(complaint, oldStatus, newStatus);
 
 
 
@@ -200,7 +200,7 @@ public class EmailService {
 
         
 
-        return sendGridEmailService.sendReminderToDepartment(complaint);
+        return gmailEmailService.sendReminderToDepartment(complaint);
 
     }
 
